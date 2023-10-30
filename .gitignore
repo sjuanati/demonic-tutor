@@ -1,0 +1,8 @@
+venv
+gro_env
+.env
+.DS_Store
+__pycache__/
+/logs
+*.ipynb_checkpoints
+logs.txt
