@@ -37,9 +37,9 @@ class DemonicTutor:
 
 if __name__ == "__main__":
     try:
-        # dt = DemonicTutor(INFURA_URL, "gro-gtranche_withdrawal.json")
+        dt = DemonicTutor(INFURA_URL, "gro-gtranche_withdrawal.json")
         # dt = DemonicTutor(INFURA_URL, 'gro-redemption_claim_usdc-transfers.json')
-        dt = DemonicTutor(INFURA_URL, 'gro-teamvesting_claim_gro.json')
+        # dt = DemonicTutor(INFURA_URL, 'gro-teamvesting_claim_gro.json')
         data = dt.get_data()
         print(data)
 

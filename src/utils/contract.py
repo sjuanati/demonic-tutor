@@ -11,8 +11,9 @@ import re
 
 
 class ContractUtils:
-    def __init__(self, w3_instance):
+    def __init__(self, w3_instance, addr_utils):
         self.w3 = w3_instance
+        self.addr_utils = addr_utils
 
     def parse_function_sig(self, signature: str) -> str:
         # Remove index_topic_N and "indexed" references, then strip whitespaces
@@ -62,6 +63,58 @@ class ContractUtils:
             parsed_args.append((arg_type, arg_name, indexed))
 
         return parsed_args
+
+    @staticmethod
+    def parse_txn_data(log):
+        return {
+            "txn_hash": log["transactionHash"].hex(),
+            "block_num": log["blockNumber"],
+        }
+
+    def parse_indexed_args(self, log, parsed_args, indexed_args_positions, config):
+        event_data = {}
+        for idx, pos in enumerate(indexed_args_positions):
+            arg_type, arg_name, _ = parsed_args[pos]
+            value = log["topics"][idx + 1].hex()
+
+            if arg_type == "address":
+                value = self.addr_utils.addr_to_hex(value)
+                value = self.addr_utils.clean_address(value)
+
+            elif arg_type == "uint256":
+                multiplier = 10 ** config["decimals"].get(arg_name, 0)
+                value = int(value, 16) / multiplier
+
+            elif arg_type == "bool":
+                value = self.parse_bool(value)
+
+            event_data[arg_name] = value
+        return event_data
+
+    def parse_non_indexed_args(
+        self, log, parsed_args, non_indexed_args_positions, config
+    ):
+        event_data = {}
+        data_offset = 0
+        for _, pos in enumerate(non_indexed_args_positions):
+            arg_type, arg_name, _ = parsed_args[pos]
+            raw_data = log["data"][data_offset : data_offset + 32]
+
+            decoded_data = self.w3.eth.codec.decode([arg_type], raw_data)[0]
+
+            if arg_type == "uint256":
+                multiplier = 10 ** config["decimals"].get(arg_name, 0)
+                decoded_data = decoded_data / multiplier
+
+            elif arg_type == "address":
+                decoded_data = self.addr_utils.clean_address(decoded_data)
+
+            elif arg_type == "bool":
+                decoded_data = self.parse_bool(decoded_data)
+
+            event_data[arg_name] = decoded_data
+            data_offset += 32
+        return event_data
 
     @staticmethod
     def parse_bool(hex_value: str) -> bool:

@@ -9,19 +9,22 @@ class EventsExtractor:
     def __init__(self, w3_instance, model: str):
         self.w3 = w3_instance
         self.addr_utils = AddressUtils(self.w3)
-        self.contract_utils = ContractUtils(self.w3)
+        self.contract_utils = ContractUtils(self.w3, self.addr_utils)
         self.config = FileUtils.read_model(model)
 
-
     def get_data(self):
-        function_sig = self.contract_utils.parse_function_sig(self.config["function_sig"])
-        parsed_args = self.contract_utils.parse_function_args(self.config["function_sig"])
+        events = []
+        function_sig = self.contract_utils.parse_function_sig(
+            self.config["function_sig"]
+        )
+        parsed_args = self.contract_utils.parse_function_args(
+            self.config["function_sig"]
+        )
 
+        # todo: create build_filter() and move the code below
         topics = [function_sig]
-
-        for arg_type, arg_name, indexed in parsed_args:
+        for _, arg_name, indexed in parsed_args:
             if indexed:
-                # topics.append(self.addr_utils.addr_to_hex(self.config["filters"].get(arg_name, None)))
                 filter_value = self.config["filters"].get(arg_name)
                 if filter_value:
                     topics.append(self.addr_utils.addr_to_hex(filter_value))
@@ -33,59 +36,32 @@ class EventsExtractor:
             "topics": topics,
         }
         print("filter_params", filter_params)
-        events = []
 
         txns = self.w3.eth.get_logs(filter_params)
 
-        indexed_args_positions = [idx for idx, (_, _, indexed) in enumerate(parsed_args) if indexed]
-        non_indexed_args_positions = [idx for idx, (_, _, indexed) in enumerate(parsed_args) if not indexed]
+        indexed_args_positions = [
+            idx for idx, (_, _, indexed) in enumerate(parsed_args) if indexed
+        ]
+        non_indexed_args_positions = [
+            idx for idx, (_, _, indexed) in enumerate(parsed_args) if not indexed
+        ]
 
         for log in txns:
-            event_data = {
-                "txn_hash": log["transactionHash"].hex(),
-                "block_num": log["blockNumber"],
-            }
+            # Extract transaction data
+            txn_data = self.contract_utils.parse_txn_data(log)
 
             # Extract indexed arguments
-            for idx, pos in enumerate(indexed_args_positions):
-                arg_type, arg_name, _ = parsed_args[pos]
-                value = log["topics"][idx + 1].hex()
-
-                if arg_type == "address":
-                    value = self.addr_utils.addr_to_hex(value)
-                    value = self.addr_utils.clean_address(value)
-
-                elif arg_type == "uint256":
-                    multiplier = 10 ** self.config["decimals"].get(arg_name, 0)
-                    value = int(value, 16) / multiplier
-
-                elif arg_type == "bool":
-                    value = self.contract_utils.parse_bool(value)
-
-                event_data[arg_name] = value
+            indexed_data = self.contract_utils.parse_indexed_args(
+                log, parsed_args, indexed_args_positions, self.config
+            )
 
             # Extract and decode non-indexed arguments
-            data_offset = 0
-            for idx, pos in enumerate(non_indexed_args_positions):
-                arg_type, arg_name, _ = parsed_args[pos]
-                raw_data = log["data"][data_offset: data_offset + 32]
+            non_indexed_data = self.contract_utils.parse_non_indexed_args(
+                log, parsed_args, non_indexed_args_positions, self.config
+            )
 
-                decoded_data = self.w3.eth.codec.decode([arg_type], raw_data)[0]
-
-                if arg_type == "uint256":
-                    multiplier = 10 ** self.config["decimals"].get(arg_name, 0)
-                    decoded_data = decoded_data / multiplier
-
-                elif arg_type == "address":
-                    decoded_data = self.addr_utils.clean_address(decoded_data)
-
-                elif arg_type == "bool":
-                    decoded_data = self.contract_utils.parse_bool(decoded_data)
-
-                event_data[arg_name] = decoded_data
-                data_offset += 32
-
-            events.append(event_data)
+            # merge data to build the complete item
+            events.append({**txn_data, **indexed_data, **non_indexed_data})
 
         return json.dumps(events, indent=4)
 
