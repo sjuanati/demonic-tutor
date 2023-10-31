@@ -8,10 +8,6 @@ load_dotenv()
 
 INFURA_URL = os.getenv("INFURA_URL")
 
-"""
-    todo:
-    - Retrieve decimals() automatically
-"""
 
 class DemonicTutor:
     def __init__(self, provider_url, model: str):
@@ -38,24 +34,14 @@ class DemonicTutor:
     def get_data(self):
         return self.ev_extractor.get_data()
 
+
 if __name__ == "__main__":
     try:
-        dt = DemonicTutor(INFURA_URL, 'transfers.json')
+        # dt = DemonicTutor(INFURA_URL, "gro-gtranche_withdrawal.json")
+        # dt = DemonicTutor(INFURA_URL, 'gro-redemption_claim_usdc-transfers.json')
+        dt = DemonicTutor(INFURA_URL, 'gro-teamvesting_claim_gro.json')
         data = dt.get_data()
         print(data)
-
-        # todo: send 1e6 or 1e18
-        # txns = dt.get_erc20_transfers(
-        #     contract_addr="0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-        #     start_block=18447447,  # 18228314,
-        #     end_block="latest",
-        #     from_addr="0x204d9DE758217A39149767731a87Bcc32427b6ef",  # redemption contract
-        #     to_addr=None,
-        # )
-        # print(txns)
-
-
-
 
     except ConnectionError as ce:
         print(f"Connection error: {ce}")

@@ -1,0 +1,17 @@
+{
+    "contract_addr": "0xf43c6bdd2f9158b5a78dccf732d190c490e28644",
+    "start_block": 18428266,
+    "end_block": "latest",
+    "function_sig": "LogClaimed (index_topic_1 address contributor, index_topic_2 uint256 id, uint256 amount, uint256 withdrawn, uint256 available)",
+    "filters": {
+        "contributor": null,
+        "id": null
+    },
+    "decimals": {
+        "contributor": null,
+        "id": 6,
+        "amount": 18,
+        "withdrawn": 18,
+        "available": 18
+    }
+}

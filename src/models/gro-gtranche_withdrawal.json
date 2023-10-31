@@ -1,0 +1,20 @@
+{
+    "contract_addr": "0x19A07afE97279cb6de1c9E73A13B7b0b63F7E67A",
+    "start_block": 18461460,
+    "end_block": "latest",
+    "function_sig": "LogNewWithdrawal(address indexed sender, address indexed recipient, uint256 amount, uint256 index, bool indexed tranche, uint256 yieldTokenAmounts, uint256 calcAmount);",
+    "filters": {
+        "sender": null,
+        "recipient": null,
+        "tranche": null
+    },
+    "decimals": {
+        "sender": null,
+        "recipient": null,
+        "amount": 18,
+        "index": 0,
+        "tranche": null,
+        "yieldTokenAmounts": 18,
+        "calcAmount": 18
+    }
+}

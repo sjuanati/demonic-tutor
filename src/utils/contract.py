@@ -1,3 +1,12 @@
+"""
+todo:
+    - logs showing the following for each conversion (example):
+        - function signature: 'Transfer(address,address,uint256)'
+        - function hash (eip-712): 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef
+        - filters: {'fromBlock': 18465740, 'toBlock': 'latest', 'address': '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', 'topics': ['0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef', '0x000000000000000000000000204d9DE758217A39149767731a87Bcc32427b6ef', None]}
+        - # records: X
+"""
+
 import re
 
 
@@ -5,7 +14,7 @@ class ContractUtils:
     def __init__(self, w3_instance):
         self.w3 = w3_instance
 
-    def parse_function_signature(self, signature: str) -> str:
+    def parse_function_sig(self, signature: str) -> str:
         # Remove index_topic_N and "indexed" references, then strip whitespaces
         clean_signature = re.sub(r"(index_topic_\d+|indexed)\s*", "", signature).strip()
 
@@ -53,3 +62,7 @@ class ContractUtils:
             parsed_args.append((arg_type, arg_name, indexed))
 
         return parsed_args
+
+    @staticmethod
+    def parse_bool(hex_value: str) -> bool:
+        return hex_value[-1] == "1"

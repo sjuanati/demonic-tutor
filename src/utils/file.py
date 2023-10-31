@@ -1,8 +1,13 @@
+"""
+todo:
+    - extract outputs to csv files
+"""
 import os
 import json
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 model_dir = os.path.join(current_dir, "..", "models")
+
 
 class FileUtils:
     def __init__(self):
