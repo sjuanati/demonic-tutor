@@ -7,6 +7,12 @@ todo:
         - # records: X
 """
 
+"""
+In Ethereum, array arguments cannot be indexed in event logs. Only fixed-size data types (e.g., address, uint256, bytes32)
+can be indexed. This is due to the way Ethereum handles indexed parameters by creating a Keccak-256 hash of the value,
+which is then added to the log topic. Arrays, being dynamic in size, don't fit into this mechanism.
+"""
+
 import re
 
 from utils.logger import logger
@@ -61,10 +67,16 @@ class ContractUtils:
                 arg_name = parts[-1]
             else:
                 indexed = False
-                arg_type, arg_name = arg.split()
+                # Check for array type
+                if "[" in arg and "]" in arg:
+                    arg_type = re.match(r"(.+)\s", arg).group(1)
+                    arg_name = re.search(r"\]\s(.+)", arg).group(1)
+                else:
+                    arg_type, arg_name = arg.split()
 
             parsed_args.append((arg_type, arg_name, indexed))
 
+        logger.info(f"parsed args: {parsed_args}")
         return parsed_args
 
     @staticmethod
@@ -95,31 +107,50 @@ class ContractUtils:
             event_data[arg_name] = value
         return event_data
 
+    # TODO: update name / can be used for indexed args?
+    def decode_and_convert(self, data_type, raw_data, decimals):
+        decoded = self.w3.eth.codec.decode([data_type], raw_data)[0]
+        if data_type == "uint256":
+            multiplier = 10**decimals
+            return decoded / multiplier
+        elif data_type == "address":
+            return self.addr_utils.clean_address(decoded)
+        elif data_type == "bool":
+            return self.parse_bool(decoded)
+        return decoded
+
+    # TODO: test non-uint arrays
     def parse_non_indexed_args(self, log, parsed_args, config):
         event_data = {}
         data_offset = 0
-        # for arg_type, arg_name, indexed in parsed_args:
-        #     if not indexed:
+
         for _, (arg_type, arg_name, _) in enumerate(
             arg for arg in parsed_args if arg[2] is False
         ):
-            raw_data = log["data"][data_offset : data_offset + 32]
+            if "[" in arg_type:
+                base_type = arg_type.split("[")[0]
+                length = int(arg_type.split("[")[1].split("]")[0])
+                values = []
 
-            decoded_data = self.w3.eth.codec.decode([arg_type], raw_data)[0]
+                for _ in range(length):
+                    raw_data_segment = log["data"][data_offset : data_offset + 32]
+                    values.append(
+                        self.decode_and_convert(
+                            base_type,
+                            raw_data_segment,
+                            config["decimals"].get(arg_name, 0),
+                        )
+                    )
+                    data_offset += 32
 
-            if arg_type == "uint256":
-                multiplier = 10 ** config["decimals"].get(arg_name, 0)
-                decoded_data = decoded_data / multiplier
+                event_data[arg_name] = values
+            else:
+                raw_data = log["data"][data_offset : data_offset + 32]
+                event_data[arg_name] = self.decode_and_convert(
+                    arg_type, raw_data, config["decimals"].get(arg_name, 0)
+                )
+                data_offset += 32
 
-            elif arg_type == "address":
-                decoded_data = self.addr_utils.clean_address(decoded_data)
-
-            elif arg_type == "bool":
-                decoded_data = self.parse_bool(decoded_data)
-
-            event_data[arg_name] = decoded_data
-            # Increment data_offset by 32 bytes since Ethereum logs are stored in 32-byte chunks.
-            data_offset += 32
         return event_data
 
     @staticmethod
