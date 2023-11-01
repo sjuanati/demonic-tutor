@@ -114,7 +114,7 @@ class ContractUtils:
         if isinstance(decimals, list):  # Fetch the right decimal if it's an array
             decimals = decimals[index]
 
-        if data_type == "uint256":
+        if data_type.startswith("uint") or data_type.startswith("int"):
             multiplier = 10**decimals
             return decoded / multiplier
         elif data_type == "address":
