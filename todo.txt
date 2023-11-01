@@ -1,0 +1,8 @@
+TODO:
+- measure start & end time for each extraction
+- dump extractions to csv
+- multicall to get multiple balances based on list of addresses
+
+
+DONE:
+- tests (better without mock, to get exact expected values after every parsing change)
