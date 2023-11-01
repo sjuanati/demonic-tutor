@@ -19,6 +19,7 @@ class TestDemonicTutorParsing(unittest.TestCase):
         self.dt = DemonicTutor(INFURA_URL)
         self.loader = FileUtils()
 
+
     def test_bool_filter(self):
         """
         Filter by indexed boolean
@@ -29,13 +30,13 @@ class TestDemonicTutorParsing(unittest.TestCase):
 
         self.assertEqual(actual, expected)
 
-    def test_array(self):
+    def test_array_and_no_indices(self):
         """
         Array of integers
         LogNewTrancheBalance(uint256[2],uint256)
         """
-        actual = json.loads(self.dt.get_data("05_array.json", "TestDemonicTutor"))
-        expected = self.loader.read_output_test("05_array.json")
+        actual = json.loads(self.dt.get_data("05_array_no_indices.json", "TestDemonicTutor"))
+        expected = self.loader.read_output_test("05_array_no_indices.json")
 
         self.assertEqual(actual, expected)
 
