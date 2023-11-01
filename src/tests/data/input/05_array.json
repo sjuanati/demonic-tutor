@@ -1,0 +1,11 @@
+{
+    "contract_addr": "0x19a07afe97279cb6de1c9e73a13b7b0b63f7e67a",
+    "start_block": 18462248,
+    "end_block": 18462248,
+    "function_sig": "LogNewTrancheBalance (uint256[2] balances, uint256 _utilisation)",
+    "filters": {},
+    "decimals": {
+        "balances": 18,
+        "_utilisation": 4
+    }
+}

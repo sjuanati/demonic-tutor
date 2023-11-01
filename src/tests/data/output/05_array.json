@@ -1,0 +1,11 @@
+[
+    {
+        "txn_hash": "0x237d7387eaadcb47c80bc6bbdb73ce42966f57bf51996a900097cdfb82e8c404",
+        "block_num": 18462248,
+        "balances": [
+            676375.4423174307,
+            2549011.364591821
+        ],
+        "_utilisation": 3.7686
+    }
+]

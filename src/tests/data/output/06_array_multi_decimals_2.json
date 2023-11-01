@@ -1,0 +1,19 @@
+[
+    {
+        "txn_hash": "0x71c46c12100314e8fde385390139008fa4699f4e271e9881baa8e3ed4e32d5bb",
+        "block_num": 18394193,
+        "user": "0x236a0f73b0b470568678cbc832ec1f8d76457f45",
+        "referral": "0x0000000000000000000000000000000000000000",
+        "pwrd": true,
+        "balanced": false,
+        "all": true,
+        "deductUsd": 5798.2309855753165,
+        "returnUsd": 5769.23983064744,
+        "lpAmount": 5613.660983635258,
+        "tokenAmounts": [
+            0.0,
+            5769.537416,
+            0.0
+        ]
+    }
+]
