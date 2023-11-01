@@ -29,10 +29,10 @@ class ContractUtils:
         # Construct and return the cleaned signature
         clean_signature = f"{function_name}({','.join(argument_types)})"
 
-        print("clean_sig", clean_signature)
+        print("sig:", clean_signature)
 
         eip_712_signature = self.w3.keccak(text=clean_signature).hex()
-        print("eip_712_signature", eip_712_signature)
+        print("sig-hash:", eip_712_signature)
 
         return eip_712_signature
 
@@ -71,11 +71,12 @@ class ContractUtils:
             "block_num": log["blockNumber"],
         }
 
-    def parse_indexed_args(self, log, parsed_args, indexed_args_positions, config):
+    def parse_indexed_args(self, log, parsed_args, config):
         event_data = {}
-        for idx, pos in enumerate(indexed_args_positions):
-            arg_type, arg_name, _ = parsed_args[pos]
-            value = log["topics"][idx + 1].hex()
+        for i, (arg_type, arg_name, _) in enumerate(
+            arg for arg in parsed_args if arg[2] is True
+        ):
+            value = log["topics"][i + 1].hex()
 
             if arg_type == "address":
                 value = self.addr_utils.addr_to_hex(value)
@@ -91,13 +92,14 @@ class ContractUtils:
             event_data[arg_name] = value
         return event_data
 
-    def parse_non_indexed_args(
-        self, log, parsed_args, non_indexed_args_positions, config
-    ):
+    def parse_non_indexed_args(self, log, parsed_args, config):
         event_data = {}
         data_offset = 0
-        for _, pos in enumerate(non_indexed_args_positions):
-            arg_type, arg_name, _ = parsed_args[pos]
+        # for arg_type, arg_name, indexed in parsed_args:
+        #     if not indexed:
+        for _, (arg_type, arg_name, _) in enumerate(
+            arg for arg in parsed_args if arg[2] is False
+        ):
             raw_data = log["data"][data_offset : data_offset + 32]
 
             decoded_data = self.w3.eth.codec.decode([arg_type], raw_data)[0]
@@ -113,6 +115,7 @@ class ContractUtils:
                 decoded_data = self.parse_bool(decoded_data)
 
             event_data[arg_name] = decoded_data
+            # Increment data_offset by 32 bytes since Ethereum logs are stored in 32-byte chunks.
             data_offset += 32
         return event_data
 

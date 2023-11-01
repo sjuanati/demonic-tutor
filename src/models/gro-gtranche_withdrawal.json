@@ -6,7 +6,7 @@
     "filters": {
         "sender": null,
         "recipient": null,
-        "tranche": null
+        "tranche": true
     },
     "decimals": {
         "sender": null,
