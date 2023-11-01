@@ -53,6 +53,16 @@ class TestDemonicTutorParsing(unittest.TestCase):
         self.assertEqual(actual_dai, expected_dai)
         self.assertEqual(actual_usdc, expected_usdc)
 
+    def test_negative_amount(self):
+        """
+        Negative amount
+        Swap (index_topic_1 address sender, ..., uint128 liquidity, int24 tick)
+        """
+        actual = json.loads(self.dt.get_data("07_negative_amount.json", "TestDemonicTutor"))
+        expected = self.loader.read_output_test("07_negative_amount.json")
+
+        self.assertEqual(actual, expected)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,0 +1,19 @@
+{
+    "contract_addr": "0x50cd7a5a848582063b682ebbbefde99cc6b35e87",
+    "start_block": 18478798,
+    "end_block": 18478798,
+    "function_sig": "Swap (index_topic_1 address sender, index_topic_2 address recipient, int256 amount0, int256 amount1, uint160 sqrtPriceX96, uint128 liquidity, int24 tick)",
+    "filters": {
+        "sender": null,
+        "recipient": null
+    },
+    "decimals": {
+        "sender": null,
+        "recipient": null,
+        "amount0": 18,
+        "amount1": 18,
+        "sqrtPriceX96": 18,
+        "liquidity": 18,
+        "tick": 0
+    }
+}

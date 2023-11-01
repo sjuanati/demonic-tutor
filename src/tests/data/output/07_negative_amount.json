@@ -1,0 +1,13 @@
+[
+    {
+        "txn_hash": "0x7450e428002eb29713f67ec02bdd82ebc9434726f420e5eab055504172e5a050",
+        "block_num": 18478798,
+        "sender": "0x80a64c6d7f12c47b7c66c5b4e20e72bc1fcd5d9e",
+        "recipient": "0x80a64c6d7f12c47b7c66c5b4e20e72bc1fcd5d9e",
+        "amount0": 230140.0,
+        "amount1": -0.012185867901220976,
+        "sqrtPriceX96": 18137295.85615166,
+        "liquidity": 2587.6558798587166,
+        "tick": -167651.0
+    }
+]
