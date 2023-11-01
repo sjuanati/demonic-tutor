@@ -9,6 +9,8 @@ todo:
 
 import re
 
+from utils.logger import logger
+
 
 class ContractUtils:
     def __init__(self, w3_instance, addr_utils):
@@ -29,10 +31,11 @@ class ContractUtils:
         # Construct and return the cleaned signature
         clean_signature = f"{function_name}({','.join(argument_types)})"
 
-        print("sig:", clean_signature)
-
+        # Convert signature to EIP-712
         eip_712_signature = self.w3.keccak(text=clean_signature).hex()
-        print("sig-hash:", eip_712_signature)
+
+        logger.info(f"function sig: {clean_signature}")
+        logger.info(f"function hash: {eip_712_signature}")
 
         return eip_712_signature
 

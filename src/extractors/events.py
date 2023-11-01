@@ -1,5 +1,6 @@
 import json
 
+from utils.logger import logger
 from utils.file import FileUtils
 from utils.address import AddressUtils
 from utils.contract import ContractUtils
@@ -36,7 +37,7 @@ class EventsExtractor:
             "address": self.addr_utils.addr_checksum(self.config["contract_addr"]),
             "topics": topics,
         }
-        print("filter:", filter_params)
+        logger.info(f"filter: {filter_params}")
         return filter_params
 
     def get_data(self):
@@ -72,7 +73,7 @@ class EventsExtractor:
 
             num_records += 1
 
-        print("# records:", num_records)
+        logger.info(f"# records: {num_records}")
         return json.dumps(events, indent=4)
 
 
