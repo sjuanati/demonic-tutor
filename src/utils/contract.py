@@ -131,7 +131,37 @@ class ContractUtils:
         ):
             decimals_value = config["decimals"].get(arg_name, 0)
 
-            if "[" in arg_type:
+            # dynamic-size array
+            if "[]" in arg_type:
+                base_type = arg_type.replace("[]", "")
+
+                # Get the position (offset) where the dynamic array starts:
+                # - First 32 bytes: lenght of the array (eg: 3)
+                # - Following 32 bytes: each element of the array
+                raw_data = log["data"][data_offset: data_offset + 32]
+                offset = int.from_bytes(raw_data, byteorder='big')
+
+                # Get the length of the dynamic array and move past the
+                # length where the array items start
+                raw_data = log["data"][offset: offset + 32]
+                num_items = int.from_bytes(raw_data, byteorder='big')
+                offset += 32
+
+                # Process each array item
+                values = []
+                for _ in range(num_items):
+                    raw_data_segment = log["data"][offset: offset + 32]
+                    values.append(
+                        self.decode_and_convert(
+                            base_type, raw_data_segment, decimals_value
+                        )
+                    )
+                    offset += 32
+
+                event_data[arg_name] = values
+                data_offset += 32
+            # fixed-size array
+            elif "[" in arg_type:
                 base_type = arg_type.split("[")[0]
                 length = int(arg_type.split("[")[1].split("]")[0])
                 values = []
@@ -144,8 +174,8 @@ class ContractUtils:
                         )
                     )
                     data_offset += 32
-
                 event_data[arg_name] = values
+            # other types (address, uint, bool)
             else:
                 raw_data = log["data"][data_offset : data_offset + 32]
                 event_data[arg_name] = self.decode_and_convert(
@@ -154,6 +184,7 @@ class ContractUtils:
                 data_offset += 32
 
         return event_data
+
 
     @staticmethod
     def parse_bool(hex_value: str) -> bool:

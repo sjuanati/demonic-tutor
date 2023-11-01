@@ -28,7 +28,8 @@ if __name__ == "__main__":
         # data = dt.get_data("gro-gtranche_newtranchebalance.json")  # Arrays
         # data = dt.get_data("gro-gtranche_withdrawal.json")  # Filter by bool
         # data = dt.get_data("gro-withdrawhandler-usdc.json")  # Filter by bool
-        data = dt.get_data("uniswap-pool_swap.json")  # Negative int
+        # data = dt.get_data("uniswap-pool_swap.json")  # Negative int
+        data = dt.get_data("balancer-pool_changed.json")  # Negative int
         print(data)
 
     except ConnectionError as ce:

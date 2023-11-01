@@ -1,0 +1,26 @@
+{
+    "contract_addr": "0xba12222222228d8ba445958a75a0704d566bf2c8",
+    "start_block": 18280932,
+    "end_block": 18280932,
+    "function_sig": "PoolBalanceChanged (index_topic_1 bytes32 poolId, index_topic_2 address liquidityProvider, address[] tokens, int256[] deltas, uint256[] protocolFeeAmounts)",
+    "filters": {
+        "poolId": null,
+        "liquidityProvider": null
+    },
+    "decimals": {
+        "poolId": null,
+        "liquidityProvider": null,
+        "tokens": [
+            null,
+            null
+        ],
+        "deltas": [
+            18,
+            18
+        ],
+        "protocolFeeAmounts": [
+            18,
+            18
+        ]
+    }
+}
