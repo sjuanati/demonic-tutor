@@ -7,11 +7,14 @@ from utils.contract import ContractUtils
 
 
 class EventsExtractor:
-    def __init__(self, w3_instance, model: str):
+    def __init__(self, w3_instance, model: str, context: str = "DemonicTutor"):
         self.w3 = w3_instance
         self.addr_utils = AddressUtils(self.w3)
         self.contract_utils = ContractUtils(self.w3, self.addr_utils)
-        self.config = FileUtils.read_model(model)
+        if context == "DemonicTutor":
+            self.config = FileUtils.read_model(model)
+        else: # run input tests
+            self.config = FileUtils.read_input_test(model)
 
     def _build_filter_params(self, function_sig, parsed_args):
         topics = [function_sig]

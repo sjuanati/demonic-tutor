@@ -108,15 +108,17 @@ class ContractUtils:
         return event_data
 
     # TODO: update name / can be used for indexed args?
-    def decode_and_convert(self, data_type, raw_data, decimals):
+    def decode_and_convert(self, data_type, raw_data, decimals, index=0):
         decoded = self.w3.eth.codec.decode([data_type], raw_data)[0]
+
+        if isinstance(decimals, list):  # Fetch the right decimal if it's an array
+            decimals = decimals[index]
+
         if data_type == "uint256":
             multiplier = 10**decimals
             return decoded / multiplier
         elif data_type == "address":
             return self.addr_utils.clean_address(decoded)
-        elif data_type == "bool":
-            return self.parse_bool(decoded)
         return decoded
 
     # TODO: test non-uint arrays
@@ -127,18 +129,18 @@ class ContractUtils:
         for _, (arg_type, arg_name, _) in enumerate(
             arg for arg in parsed_args if arg[2] is False
         ):
+            decimals_value = config["decimals"].get(arg_name, 0)
+
             if "[" in arg_type:
                 base_type = arg_type.split("[")[0]
                 length = int(arg_type.split("[")[1].split("]")[0])
                 values = []
 
-                for _ in range(length):
+                for i in range(length):
                     raw_data_segment = log["data"][data_offset : data_offset + 32]
                     values.append(
                         self.decode_and_convert(
-                            base_type,
-                            raw_data_segment,
-                            config["decimals"].get(arg_name, 0),
+                            base_type, raw_data_segment, decimals_value, i
                         )
                     )
                     data_offset += 32
@@ -147,7 +149,7 @@ class ContractUtils:
             else:
                 raw_data = log["data"][data_offset : data_offset + 32]
                 event_data[arg_name] = self.decode_and_convert(
-                    arg_type, raw_data, config["decimals"].get(arg_name, 0)
+                    arg_type, raw_data, decimals_value
                 )
                 data_offset += 32
 

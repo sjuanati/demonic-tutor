@@ -1,0 +1,25 @@
+{
+    "contract_addr": "0x641befa4db601578a64f0fc1f4e89e9869268fe7",
+    "start_block": 18394193,
+    "end_block": 18394193,
+    "function_sig": "LogNewWithdrawal (index_topic_1 address user, index_topic_2 address referral, bool pwrd, bool balanced, bool all, uint256 deductUsd, uint256 returnUsd, uint256 lpAmount, uint256[3] tokenAmounts)",
+    "filters": {
+        "user": null,
+        "referral": null
+    },
+    "decimals": {
+        "user": null,
+        "referral": null,
+        "pwrd": null,
+        "balanced": null,
+        "all": null,
+        "deductUsd": 18,
+        "returnUsd": 18,
+        "lpAmount": 18,
+        "tokenAmounts": [
+            18,
+            6,
+            6
+        ]
+    }
+}
