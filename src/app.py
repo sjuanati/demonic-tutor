@@ -2,7 +2,7 @@ import os
 
 from web3 import Web3
 from dotenv import load_dotenv
-from utils.logger import logger
+from utils.logger import setup_logger
 from extractors.events import EventsExtractor
 from utils.exceptions import (
     DataExtractionError,
@@ -13,6 +13,7 @@ from utils.exceptions import (
 load_dotenv()
 INFURA_URL = os.getenv("INFURA_URL")
 
+logger = setup_logger(__name__)
 
 class DemonicTutor:
     def __init__(self, provider_url):

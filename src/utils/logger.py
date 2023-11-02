@@ -14,8 +14,8 @@ import logging.handlers
 from constants import LOG_FILE_MAX_SIZE, LOG_BACKUP_COUNT
 
 
-def setup_logger():
-    logger = logging.getLogger(__name__)
+def setup_logger(name):
+    logger = logging.getLogger(name)
     logger.setLevel(logging.DEBUG)
 
     # Dynamically generate the filename based on the current date
@@ -34,7 +34,6 @@ def setup_logger():
 
     # Create a formatter and set it for the handler
     formatter = logging.Formatter(
-        # "%(asctime)s %(levelname)-8s: [%(name)s] [%(filename)s:%(lineno)d] %(message)s",
         "%(asctime)s %(levelname)-8s: [%(name)s.py:%(lineno)d] %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
     )
@@ -48,6 +47,3 @@ def setup_logger():
     logger.addHandler(console_handler)
 
     return logger
-
-
-logger = setup_logger()

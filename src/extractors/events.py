@@ -1,9 +1,11 @@
 import json
 
-from utils.logger import logger
 from utils.file import FileUtils
+from utils.logger import setup_logger
 from utils.address import AddressUtils
 from utils.contract import ContractUtils
+
+logger = setup_logger(__name__)
 
 
 class EventsExtractor:
@@ -78,8 +80,8 @@ class EventsExtractor:
         logger.info(f"# records: {num_records}")
 
         # dump data into file
-        if self.context == 'main_input':
-            FileUtils().json_to_csv(events, self.model, 'main_output')
+        if self.context == "main_input":
+            FileUtils().json_to_csv(events, self.model, "main_output")
 
         return json.dumps(events, indent=4)
 

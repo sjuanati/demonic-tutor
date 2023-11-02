@@ -1,8 +1,11 @@
 import os
 import json
 import pandas as pd
+
 from typing import Dict, Any
-from utils.logger import logger
+from utils.logger import setup_logger
+
+logger = setup_logger(__name__)
 
 
 class FileUtils:
@@ -32,9 +35,8 @@ class FileUtils:
                 return json.load(f)
         except FileNotFoundError as err:
             logger.error(
-                f"File '{file_name}' not found in context '{context}'"
-                f" -> {err}"
-                )
+                f"File '{file_name}' not found in context '{context}'" f" -> {err}"
+            )
             raise
         except json.JSONDecodeError as error:
             logger.error(
