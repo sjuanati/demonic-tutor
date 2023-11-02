@@ -64,6 +64,15 @@ class TestDemonicTutorParsing(unittest.TestCase):
 
         self.assertEqual(actual, expected)
 
+    def test_dynamic_array(self):
+        """
+        3 dynamic arrays
+        PoolBalanceChanged (..., address[] tokens, int256[] deltas, uint256[] protocolFeeAmounts)
+        """
+        actual = json.loads(self.dt.get_data("08-dynamic_array.json", "TestDemonicTutor"))
+        expected = self.loader.read_output_test("08-dynamic_array.json")
+
+        self.assertEqual(actual, expected)
 
 if __name__ == "__main__":
     unittest.main()
