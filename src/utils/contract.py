@@ -1,6 +1,8 @@
 import re
 
+from constants import EVM_WORD_SIZE
 from utils.logger import setup_logger
+
 
 logger = setup_logger(__name__)
 
@@ -126,28 +128,28 @@ class ContractUtils:
                 # Get the position (offset) where the dynamic array starts:
                 # - First 32 bytes: lenght of the array (eg: 3)
                 # - Following 32 bytes: each element of the array
-                raw_data = log["data"][data_offset : data_offset + 32]
+                raw_data = log["data"][data_offset : data_offset + EVM_WORD_SIZE]
                 offset = int.from_bytes(raw_data, byteorder="big")
 
                 # Get the length of the dynamic array and move past the
                 # length where the array items start
-                raw_data = log["data"][offset : offset + 32]
+                raw_data = log["data"][offset : offset + EVM_WORD_SIZE]
                 num_items = int.from_bytes(raw_data, byteorder="big")
-                offset += 32
+                offset += EVM_WORD_SIZE
 
                 # Process each array item
                 values = []
                 for _ in range(num_items):
-                    raw_data_segment = log["data"][offset : offset + 32]
+                    raw_data_segment = log["data"][offset : offset + EVM_WORD_SIZE]
                     values.append(
                         self.decode_and_convert(
                             base_type, raw_data_segment, decimals_value
                         )
                     )
-                    offset += 32
+                    offset += EVM_WORD_SIZE
 
                 event_data[arg_name] = values
-                data_offset += 32
+                data_offset += EVM_WORD_SIZE
             # fixed-size array
             elif "[" in arg_type:
                 base_type = arg_type.split("[")[0]
@@ -155,21 +157,21 @@ class ContractUtils:
                 values = []
 
                 for i in range(length):
-                    raw_data_segment = log["data"][data_offset : data_offset + 32]
+                    raw_data_segment = log["data"][data_offset : data_offset + EVM_WORD_SIZE]
                     values.append(
                         self.decode_and_convert(
                             base_type, raw_data_segment, decimals_value, i
                         )
                     )
-                    data_offset += 32
+                    data_offset += EVM_WORD_SIZE
                 event_data[arg_name] = values
             # other types (address, uint, bool)
             else:
-                raw_data = log["data"][data_offset : data_offset + 32]
+                raw_data = log["data"][data_offset : data_offset + EVM_WORD_SIZE]
                 event_data[arg_name] = self.decode_and_convert(
                     arg_type, raw_data, decimals_value
                 )
-                data_offset += 32
+                data_offset += EVM_WORD_SIZE
 
         return event_data
 
