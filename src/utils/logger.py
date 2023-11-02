@@ -8,8 +8,8 @@
 #     print(datetime.datetime.utcnow().date().isoformat())
 """
 
-import logging.handlers
 import datetime
+import logging.handlers
 
 from constants import LOG_FILE_MAX_SIZE, LOG_BACKUP_COUNT
 

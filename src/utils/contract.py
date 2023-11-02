@@ -1,17 +1,4 @@
-"""
-todo:
-    - logs showing the following for each conversion (example):
-        - function signature: 'Transfer(address,address,uint256)'
-        - function hash (eip-712): 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef
-        - filters: {'fromBlock': 18465740, 'toBlock': 'latest', 'address': '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', 'topics': ['0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef', '0x000000000000000000000000204d9DE758217A39149767731a87Bcc32427b6ef', None]}
-        - # records: X
-"""
 
-"""
-In Ethereum, array arguments cannot be indexed in event logs. Only fixed-size data types (e.g., address, uint256, bytes32)
-can be indexed. This is due to the way Ethereum handles indexed parameters by creating a Keccak-256 hash of the value,
-which is then added to the log topic. Arrays, being dynamic in size, don't fit into this mechanism.
-"""
 
 import re
 
@@ -111,6 +98,7 @@ class ContractUtils:
     def decode_and_convert(self, data_type, raw_data, decimals, index=0):
         decoded = self.w3.eth.codec.decode([data_type], raw_data)[0]
 
+        # TODO: this might not be required. Assume every dynamic item will have the same decimal
         if isinstance(decimals, list):  # Fetch the right decimal if it's an array
             decimals = decimals[index]
 
@@ -138,19 +126,19 @@ class ContractUtils:
                 # Get the position (offset) where the dynamic array starts:
                 # - First 32 bytes: lenght of the array (eg: 3)
                 # - Following 32 bytes: each element of the array
-                raw_data = log["data"][data_offset: data_offset + 32]
-                offset = int.from_bytes(raw_data, byteorder='big')
+                raw_data = log["data"][data_offset : data_offset + 32]
+                offset = int.from_bytes(raw_data, byteorder="big")
 
                 # Get the length of the dynamic array and move past the
                 # length where the array items start
-                raw_data = log["data"][offset: offset + 32]
-                num_items = int.from_bytes(raw_data, byteorder='big')
+                raw_data = log["data"][offset : offset + 32]
+                num_items = int.from_bytes(raw_data, byteorder="big")
                 offset += 32
 
                 # Process each array item
                 values = []
                 for _ in range(num_items):
-                    raw_data_segment = log["data"][offset: offset + 32]
+                    raw_data_segment = log["data"][offset : offset + 32]
                     values.append(
                         self.decode_and_convert(
                             base_type, raw_data_segment, decimals_value
@@ -184,7 +172,6 @@ class ContractUtils:
                 data_offset += 32
 
         return event_data
-
 
     @staticmethod
     def parse_bool(hex_value: str) -> bool:
