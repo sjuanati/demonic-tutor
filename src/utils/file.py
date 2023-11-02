@@ -4,30 +4,15 @@ import pandas as pd
 
 from typing import Dict, Any
 from utils.logger import setup_logger
+from utils.context import Context
 
 logger = setup_logger(__name__)
 
 
 class FileUtils:
-    # Directory paths configuration
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    dir_paths = {
-        "main_input": os.path.join(current_dir, "..", "models"),
-        "main_output": os.path.join(current_dir, "..", "data"),
-        "test_input": os.path.join(current_dir, "..", "tests/data/input"),
-        "test_output": os.path.join(current_dir, "..", "tests/data/output"),
-    }
-
-    @staticmethod
-    def _get_full_path(file_name: str, context: str) -> str:
-        if context not in FileUtils.dir_paths:
-            raise ValueError(f"Invalid context provided: '{context}'")
-        dir_path = FileUtils.dir_paths[context]
-        return os.path.join(dir_path, file_name)
-
     @staticmethod
     def read_file(file_name: str, context: str) -> Dict[str, Any]:
-        full_path = FileUtils._get_full_path(file_name, context)
+        full_path = os.path.join(context, file_name)
 
         # Reads a JSON file based on its name and context
         try:
@@ -47,7 +32,7 @@ class FileUtils:
 
     @staticmethod
     def json_to_csv(data, file_name: str, context: str):
-        full_path = FileUtils._get_full_path(file_name, context)
+        full_path = os.path.join(context, file_name)
         csv_path = os.path.splitext(full_path)[0] + ".csv"
 
         # Converts a JSON data structure into a CSV file

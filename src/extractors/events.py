@@ -1,6 +1,7 @@
 import json
 
 from utils.file import FileUtils
+from utils.context import Context
 from utils.logger import setup_logger
 from utils.address import AddressUtils
 from utils.contract import ContractUtils
@@ -9,12 +10,12 @@ logger = setup_logger(__name__)
 
 
 class EventsExtractor:
-    def __init__(self, w3_instance, model: str, context: str = "main_input"):
+    def __init__(self, w3_instance, model: str, context: str = Context.MAIN.INPUT):
         self.w3 = w3_instance
         self.model = model
         self.context = context
         self.addr_utils = AddressUtils(self.w3)
-        self.contract_utils = ContractUtils(self.w3, self.addr_utils)
+        self.contract_utils = ContractUtils(self.w3, self.addr_utils, context)
         self.config = FileUtils.read_file(model, context)
 
     def _build_filter_params(self, function_sig, parsed_args):
@@ -41,7 +42,10 @@ class EventsExtractor:
             "address": self.addr_utils.addr_checksum(self.config["contract_addr"]),
             "topics": topics,
         }
-        logger.info(f"filter: {filter_params}")
+
+        if self.context == Context.MAIN.INPUT:
+            logger.info(f"filter: {filter_params}")
+
         return filter_params
 
     def get_data(self):
@@ -77,11 +81,10 @@ class EventsExtractor:
 
             num_records += 1
 
-        logger.info(f"# records: {num_records}")
-
         # dump data into file
-        if self.context == "main_input":
-            FileUtils().json_to_csv(events, self.model, "main_output")
+        if self.context == Context.MAIN.INPUT:
+            logger.info(f"# records: {num_records}")
+            FileUtils().json_to_csv(events, self.model, Context.MAIN.OUTPUT)
 
         return json.dumps(events, indent=4)
 

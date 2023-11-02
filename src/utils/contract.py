@@ -1,6 +1,7 @@
 import re
 
 from constants import EVM_WORD_SIZE
+from utils.context import Context
 from utils.logger import setup_logger
 
 
@@ -8,9 +9,10 @@ logger = setup_logger(__name__)
 
 
 class ContractUtils:
-    def __init__(self, w3_instance, addr_utils):
+    def __init__(self, w3_instance, addr_utils, context):
         self.w3 = w3_instance
         self.addr_utils = addr_utils
+        self.context = context
 
     def parse_function_sig(self, signature: str) -> str:
         # Remove index_topic_N and "indexed" references, then strip whitespaces
@@ -29,13 +31,13 @@ class ContractUtils:
         # Convert signature to EIP-712
         eip_712_signature = self.w3.keccak(text=clean_signature).hex()
 
-        logger.info(f"function sig: {clean_signature}")
-        logger.info(f"function hash: {eip_712_signature}")
+        if self.context == Context.MAIN.INPUT:
+            logger.info(f"function sig: {clean_signature}")
+            logger.info(f"function hash: {eip_712_signature}")
 
         return eip_712_signature
 
-    @staticmethod
-    def parse_function_args(signature: str):
+    def parse_function_args(self, signature: str):
         # Extract the arguments section using regex
         argument_section = re.search(r"\((.*)\)", signature).group(1)
 
@@ -65,7 +67,9 @@ class ContractUtils:
 
             parsed_args.append((arg_type, arg_name, indexed))
 
-        logger.info(f"parsed args: {parsed_args}")
+        if self.context == Context.MAIN.INPUT:
+            logger.info(f"parsed args: {parsed_args}")
+
         return parsed_args
 
     @staticmethod
@@ -157,7 +161,9 @@ class ContractUtils:
                 values = []
 
                 for i in range(length):
-                    raw_data_segment = log["data"][data_offset : data_offset + EVM_WORD_SIZE]
+                    raw_data_segment = log["data"][
+                        data_offset : data_offset + EVM_WORD_SIZE
+                    ]
                     values.append(
                         self.decode_and_convert(
                             base_type, raw_data_segment, decimals_value, i
