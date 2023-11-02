@@ -24,8 +24,8 @@ class TestDemonicTutorParsing(unittest.TestCase):
         Filter by indexed boolean
         LogNewWithdrawal(address indexed sender, address indexed recipient, uint256 amount, uint256 index, bool indexed tranche...);
         """
-        actual = json.loads(self.dt.get_data("04_bool_filter.json", "input_test"))
-        expected = self.loader.read_file("04_bool_filter.json", "output_test")
+        actual = json.loads(self.dt.get_data("04_bool_filter.json", "test_input"))
+        expected = self.loader.read_file("04_bool_filter.json", "test_output")
 
         self.assertEqual(actual, expected)
 
@@ -35,9 +35,9 @@ class TestDemonicTutorParsing(unittest.TestCase):
         LogNewTrancheBalance(uint256[2],uint256)
         """
         actual = json.loads(
-            self.dt.get_data("05_array_no_indices.json", "input_test")
+            self.dt.get_data("05_array_no_indices.json", "test_input")
         )
-        expected = self.loader.read_file("05_array_no_indices.json", "output_test")
+        expected = self.loader.read_file("05_array_no_indices.json", "test_output")
 
         self.assertEqual(actual, expected)
 
@@ -47,17 +47,17 @@ class TestDemonicTutorParsing(unittest.TestCase):
         LogNewWithdrawal (index_topic_1 address user, ..., uint256[3] tokenAmounts)
         """
         actual_dai = json.loads(
-            self.dt.get_data("06_array_multi_decimals_1.json", "input_test")
+            self.dt.get_data("06_array_multi_decimals_1.json", "test_input")
         )
         expected_dai = self.loader.read_file(
-            "06_array_multi_decimals_1.json", "output_test"
+            "06_array_multi_decimals_1.json", "test_output"
         )
 
         actual_usdc = json.loads(
-            self.dt.get_data("06_array_multi_decimals_2.json", "input_test")
+            self.dt.get_data("06_array_multi_decimals_2.json", "test_input")
         )
         expected_usdc = self.loader.read_file(
-            "06_array_multi_decimals_2.json", "output_test"
+            "06_array_multi_decimals_2.json", "test_output"
         )
 
         self.assertEqual(actual_dai, expected_dai)
@@ -69,9 +69,9 @@ class TestDemonicTutorParsing(unittest.TestCase):
         Swap (index_topic_1 address sender, ..., uint128 liquidity, int24 tick)
         """
         actual = json.loads(
-            self.dt.get_data("07_negative_amount.json", "input_test")
+            self.dt.get_data("07_negative_amount.json", "test_input")
         )
-        expected = self.loader.read_file("07_negative_amount.json", "output_test")
+        expected = self.loader.read_file("07_negative_amount.json", "test_output")
 
         self.assertEqual(actual, expected)
 
@@ -81,9 +81,9 @@ class TestDemonicTutorParsing(unittest.TestCase):
         PoolBalanceChanged (..., address[] tokens, int256[] deltas, uint256[] protocolFeeAmounts)
         """
         actual = json.loads(
-            self.dt.get_data("08-dynamic_array.json", "input_test")
+            self.dt.get_data("08-dynamic_array.json", "test_input")
         )
-        expected = self.loader.read_file("08-dynamic_array.json", "output_test")
+        expected = self.loader.read_file("08-dynamic_array.json", "test_output")
 
         self.assertEqual(actual, expected)
 

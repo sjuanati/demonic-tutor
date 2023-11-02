@@ -7,8 +7,10 @@ from utils.contract import ContractUtils
 
 
 class EventsExtractor:
-    def __init__(self, w3_instance, model: str, context: str = "main"):
+    def __init__(self, w3_instance, model: str, context: str = "main_input"):
         self.w3 = w3_instance
+        self.model = model
+        self.context = context
         self.addr_utils = AddressUtils(self.w3)
         self.contract_utils = ContractUtils(self.w3, self.addr_utils)
         self.config = FileUtils.read_file(model, context)
@@ -74,6 +76,11 @@ class EventsExtractor:
             num_records += 1
 
         logger.info(f"# records: {num_records}")
+
+        # dump data into file
+        if self.context == 'main_input':
+            FileUtils().json_to_csv(events, self.model, 'main_output')
+
         return json.dumps(events, indent=4)
 
 

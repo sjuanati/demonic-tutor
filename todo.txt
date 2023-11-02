@@ -1,7 +1,9 @@
 TODO:
 - measure start & end time for each extraction
 - dump extractions to csv
+- recursive extractions
 - multicall to get multiple balances based on list of addresses
+- support funcs: timestamp to block, contract call at given block,.. -> create menu
 
 
 DONE:

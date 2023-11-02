@@ -1,3 +1,4 @@
 virtualenv venv --python=python3.9
 pip3 install web3
 pip3 install python-dotenv
+pip3 install pandas
