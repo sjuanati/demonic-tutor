@@ -2,12 +2,19 @@ import json
 
 from utils.file import FileUtils
 from utils.context import Context
+from web3.exceptions import Web3Exception, LogTopicError
 from utils.logger import setup_logger
 from utils.address import AddressUtils
 from parsers.event import EventParser
 from filters.event import build_filter_params
+from utils.exceptions import TooManyResultsError
 
 logger = setup_logger(__name__)
+
+""" @TODO
+    According to web3py docs, w3.eth.get_logs() should raise a `Web3Exception`,
+    but it's not the case -> it's raising `ValueError` is too many records.
+"""
 
 
 class EventExporter:
@@ -22,15 +29,20 @@ class EventExporter:
     def extract_data(self):
         events = []
         num_records = 0
+
         function_sig = self.ev_parser.parse_function_sig(self.config["function_sig"])
         parsed_args = self.ev_parser.parse_function_args(self.config["function_sig"])
-
-        # filter_params = self._build_filter_params(function_sig, parsed_args)
         filter_params = build_filter_params(
             self.config, function_sig, parsed_args, self.w3, self.context
         )
 
-        logs = self.w3.eth.get_logs(filter_params)
+        try:
+            logs = self.w3.eth.get_logs(filter_params)
+        except ValueError as e:
+            error_data = str(e)
+            if "'code': -32005" in error_data:
+                logger.error(error_data)
+                raise TooManyResultsError(e)
 
         for log in logs:
             # Extract transaction data
