@@ -8,7 +8,7 @@ from utils.logger import setup_logger
 logger = setup_logger(__name__)
 
 
-class ContractUtils:
+class EventParser:
     def __init__(self, w3_instance, addr_utils, context):
         self.w3 = w3_instance
         self.addr_utils = addr_utils

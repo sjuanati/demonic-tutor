@@ -4,18 +4,18 @@ from utils.file import FileUtils
 from utils.context import Context
 from utils.logger import setup_logger
 from utils.address import AddressUtils
-from utils.contract import ContractUtils
+from parsers.event import EventParser
 
 logger = setup_logger(__name__)
 
 
-class EventsExtractor:
+class EventExporter:
     def __init__(self, w3_instance, model: str, context: str = Context.MAIN.INPUT):
         self.w3 = w3_instance
         self.model = model
         self.context = context
         self.addr_utils = AddressUtils(self.w3)
-        self.contract_utils = ContractUtils(self.w3, self.addr_utils, context)
+        self.ev_parser = EventParser(self.w3, self.addr_utils, context)
         self.config = FileUtils.read_file(model, context)
 
     def _build_filter_params(self, function_sig, parsed_args):
@@ -51,10 +51,10 @@ class EventsExtractor:
     def get_data(self):
         events = []
         num_records = 0
-        function_sig = self.contract_utils.parse_function_sig(
+        function_sig = self.ev_parser.parse_function_sig(
             self.config["function_sig"]
         )
-        parsed_args = self.contract_utils.parse_function_args(
+        parsed_args = self.ev_parser.parse_function_args(
             self.config["function_sig"]
         )
 
@@ -64,15 +64,15 @@ class EventsExtractor:
 
         for log in logs:
             # Extract transaction data
-            txn_data = self.contract_utils.parse_txn_data(log)
+            txn_data = self.ev_parser.parse_txn_data(log)
 
             # Extract indexed arguments
-            indexed_data = self.contract_utils.parse_indexed_args(
+            indexed_data = self.ev_parser.parse_indexed_args(
                 log, parsed_args, self.config
             )
 
             # Extract and decode non-indexed arguments
-            non_indexed_data = self.contract_utils.parse_non_indexed_args(
+            non_indexed_data = self.ev_parser.parse_non_indexed_args(
                 log, parsed_args, self.config
             )
 

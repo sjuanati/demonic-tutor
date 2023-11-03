@@ -4,7 +4,7 @@ from web3 import Web3
 from dotenv import load_dotenv
 from utils.context import Context
 from utils.logger import setup_logger
-from extractors.events import EventsExtractor
+from exporters.event import EventExporter
 from utils.exceptions import (
     DataExtractionError,
     FilterCreationError,
@@ -23,7 +23,7 @@ class DemonicTutor:
             raise ConnectionError("Initial connection to Ethereum node failed.")
 
     def get_data(self, model: str, context: str = Context.MAIN.INPUT):
-        self.ev_extractor = EventsExtractor(self.w3, model, context)
+        self.ev_extractor = EventExporter(self.w3, model, context)
         return self.ev_extractor.get_data()
 
 

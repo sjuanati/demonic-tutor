@@ -6,16 +6,16 @@ import unittest
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from app import DemonicTutor
+from dotenv import load_dotenv
 from utils.file import FileUtils
 from utils.context import Context
 
-from dotenv import load_dotenv
 
 load_dotenv()
 INFURA_URL = os.getenv("INFURA_URL")
 
 
-class TestDemonicTutorParsing(unittest.TestCase):
+class EventTester(unittest.TestCase):
     def setUp(self):
         self.dt = DemonicTutor(INFURA_URL)
         self.loader = FileUtils()
