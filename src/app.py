@@ -22,22 +22,22 @@ class DemonicTutor:
         if not self.w3.is_connected():
             raise ConnectionError("Initial connection to Ethereum node failed.")
 
-    def get_data(self, model: str, context: str = Context.MAIN.INPUT):
+    def extract_data(self, model: str, context: str = Context.MAIN.INPUT):
         self.ev_extractor = EventExporter(self.w3, model, context)
-        return self.ev_extractor.get_data()
+        return self.ev_extractor.extract_data()
 
 
 if __name__ == "__main__":
     try:
         # TODO: should be async?
         dt = DemonicTutor(INFURA_URL)
-        # data = dt.get_data("gro-redemption_claim_usdc-transfers.json")
-        # data = dt.get_data("gro-teamvesting_claim_gro.json")
-        # data = dt.get_data("gro-gtranche_newtranchebalance.json")  # Arrays
-        # data = dt.get_data("gro-gtranche_withdrawal.json")  # Filter by bool
-        # data = dt.get_data("gro-withdrawhandler-usdc.json")  # Filter by bool
-        # data = dt.get_data("uniswap-pool_swap.json")  # Negative int
-        data = dt.get_data("balancer-pool_changed.json")  # Negative int
+        # data = dt.extract_data("gro-redemption_claim_usdc-transfers.json")
+        # data = dt.extract_data("gro-teamvesting_claim_gro.json")
+        # data = dt.extract_data("gro-gtranche_newtranchebalance.json")  # Arrays
+        # data = dt.extract_data("gro-gtranche_withdrawal.json")  # Filter by bool
+        # data = dt.extract_data("gro-withdrawhandler-usdc.json")  # Filter by bool
+        # data = dt.extract_data("uniswap-pool_swap.json")  # Negative int
+        data = dt.extract_data("balancer-pool_changed.json")  # Negative int
         print(data)
 
     except ConnectionError as ce:

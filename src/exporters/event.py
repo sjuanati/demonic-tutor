@@ -5,6 +5,7 @@ from utils.context import Context
 from utils.logger import setup_logger
 from utils.address import AddressUtils
 from parsers.event import EventParser
+from filters.event import build_filter_params
 
 logger = setup_logger(__name__)
 
@@ -18,47 +19,16 @@ class EventExporter:
         self.ev_parser = EventParser(self.w3, self.addr_utils, context)
         self.config = FileUtils.read_file(model, context)
 
-    def _build_filter_params(self, function_sig, parsed_args):
-        topics = [function_sig]
-        for arg_type, arg_name, indexed in parsed_args:
-            if indexed:
-                filter_value = self.config["filters"].get(arg_name)
-                if filter_value is not None:
-                    if arg_type == "address":
-                        filter_value = self.addr_utils.addr_to_hex(filter_value)
-                    # TODO: test filtering by integer
-                    elif arg_type.startswith("uint"):
-                        filter_value = hex(filter_value)
-                    elif isinstance(filter_value, bool):
-                        filter_value = "0x{:064x}".format(int(filter_value))
-                    # TODO: Add more type conversions if necessary
-                    topics.append(filter_value)
-                else:
-                    topics.append(None)
-
-        filter_params = {
-            "fromBlock": self.config["start_block"],
-            "toBlock": self.config["end_block"],
-            "address": self.addr_utils.addr_checksum(self.config["contract_addr"]),
-            "topics": topics,
-        }
-
-        if self.context == Context.MAIN.INPUT:
-            logger.info(f"filter: {filter_params}")
-
-        return filter_params
-
-    def get_data(self):
+    def extract_data(self):
         events = []
         num_records = 0
-        function_sig = self.ev_parser.parse_function_sig(
-            self.config["function_sig"]
-        )
-        parsed_args = self.ev_parser.parse_function_args(
-            self.config["function_sig"]
-        )
+        function_sig = self.ev_parser.parse_function_sig(self.config["function_sig"])
+        parsed_args = self.ev_parser.parse_function_args(self.config["function_sig"])
 
-        filter_params = self._build_filter_params(function_sig, parsed_args)
+        # filter_params = self._build_filter_params(function_sig, parsed_args)
+        filter_params = build_filter_params(
+            self.config, function_sig, parsed_args, self.w3, self.context
+        )
 
         logs = self.w3.eth.get_logs(filter_params)
 
