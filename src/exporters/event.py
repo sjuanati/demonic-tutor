@@ -12,6 +12,7 @@ logger = setup_logger(__name__)
 """ @TODO
     According to web3py docs, w3.eth.get_logs() should raise a `Web3Exception`,
     but it's not the case -> it's raising `ValueError` is too many records.
+    => Try with other ethereum node providers
 """
 
 
@@ -36,7 +37,12 @@ class EventExporter:
 
         return lower, upper
 
-    # iterative (instead of recursive) binary-search approach
+    def log_event_processing(self, from_block, to_block, status):
+        """Helper function to log event processing status"""
+        if self.context == Context.MAIN.INPUT:
+            logger.info(f"{status} events from blocks {from_block} to {to_block}")
+
+    # iterative (non-recursive) binary-search approach
     def get_logs_in_range(self, params):
         logs = []
         ranges_to_check = [params]
@@ -44,15 +50,11 @@ class EventExporter:
         while ranges_to_check:
             current_range = ranges_to_check.pop()
             from_block, to_block = current_range["fromBlock"], current_range["toBlock"]
-            if self.context == Context.MAIN.INPUT:
-                logger.info(f"Reading events from blocks {from_block} to {to_block}")
+            self.log_event_processing(from_block, to_block, "Reading")
 
             try:
                 logs.extend(self.w3.eth.get_logs(current_range))
-                if self.context == Context.MAIN.INPUT:
-                    logger.info(
-                        f"Processed events from blocks {from_block} to {to_block}"
-                    )
+                self.log_event_processing(from_block, to_block, "Processed")
 
             except ValueError as e:
                 error_data = str(e)
@@ -61,7 +63,7 @@ class EventExporter:
                 else:
                     logger.error(f"An unexpected error occurred: {error_data}")
                     raise e
-
+                
         return logs
 
     def extract_data(self):
