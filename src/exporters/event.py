@@ -2,12 +2,10 @@ import json
 
 from utils.file import FileUtils
 from utils.context import Context
-from web3.exceptions import Web3Exception, LogTopicError
 from utils.logger import setup_logger
 from utils.address import AddressUtils
 from parsers.event import EventParser
 from filters.event import build_filter_params
-from utils.exceptions import TooManyResultsError
 
 logger = setup_logger(__name__)
 
@@ -26,6 +24,46 @@ class EventExporter:
         self.ev_parser = EventParser(self.w3, self.addr_utils, context)
         self.config = FileUtils.read_file(model, context)
 
+    def split_block_range(self, filters):
+        mid_block = (filters["fromBlock"] + filters["toBlock"]) // 2
+        if mid_block == filters["fromBlock"]:
+            logger.error(f"Too many results in a single block: {mid_block}")
+            return []
+
+        lower, upper = filters.copy(), filters.copy()
+        lower["toBlock"] = mid_block
+        upper["fromBlock"] = mid_block + 1
+
+        return lower, upper
+
+    # iterative (instead of recursive) binary-search approach
+    def get_logs_in_range(self, params):
+        logs = []
+        ranges_to_check = [params]
+
+        while ranges_to_check:
+            current_range = ranges_to_check.pop()
+            from_block, to_block = current_range["fromBlock"], current_range["toBlock"]
+            if self.context == Context.MAIN.INPUT:
+                logger.info(f"Reading events from blocks {from_block} to {to_block}")
+
+            try:
+                logs.extend(self.w3.eth.get_logs(current_range))
+                if self.context == Context.MAIN.INPUT:
+                    logger.info(
+                        f"Processed events from blocks {from_block} to {to_block}"
+                    )
+
+            except ValueError as e:
+                error_data = str(e)
+                if "'code': -32005" in error_data:
+                    ranges_to_check.extend(self.split_block_range(current_range))
+                else:
+                    logger.error(f"An unexpected error occurred: {error_data}")
+                    raise e
+
+        return logs
+
     def extract_data(self):
         events = []
         num_records = 0
@@ -36,13 +74,7 @@ class EventExporter:
             self.config, function_sig, parsed_args, self.w3, self.context
         )
 
-        try:
-            logs = self.w3.eth.get_logs(filter_params)
-        except ValueError as e:
-            error_data = str(e)
-            if "'code': -32005" in error_data:
-                logger.error(error_data)
-                raise TooManyResultsError(e)
+        logs = self.get_logs_in_range(filter_params)
 
         for log in logs:
             # Extract transaction data
@@ -69,15 +101,3 @@ class EventExporter:
             FileUtils().json_to_csv(events, self.model, Context.MAIN.OUTPUT)
 
         return json.dumps(events, indent=4)
-
-
-"""
-Tests:
-    - ev without indexed fields
-    - ev with all fields indexed
-    - ev with randomly indexed fields (not ordered)
-    - ev with struct or custom arrays
-    - ev without any data
-    - ev with dynamic types in data part (string or bytes) -> now fixed-length (32 bytes) arguments
-    - multiple ev with same name but diff parameters
-"""

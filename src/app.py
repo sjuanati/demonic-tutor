@@ -8,7 +8,6 @@ from exporters.event import EventExporter
 from utils.exceptions import (
     DataExtractionError,
     FilterCreationError,
-    TooManyResultsError,
     InvalidConfigurationError,
 )
 
@@ -17,6 +16,7 @@ INFURA_URL = os.getenv("INFURA_URL")
 
 logger = setup_logger(__name__)
 
+
 class DemonicTutor:
     def __init__(self, provider_url):
         self.w3 = Web3(Web3.HTTPProvider(provider_url))
@@ -24,12 +24,13 @@ class DemonicTutor:
             try:
                 # Try some dummy operation to trigger an exception
                 # @TODO: careful, if unauthorized for url, gives the full url incl. key
-                self.w3.eth.block_number 
+                self.w3.eth.block_number
             except Exception as e:
-                raise ConnectionError(f"Initial connection to Ethereum node failed. Reason: {str(e)}")
+                raise ConnectionError(
+                    f"Initial connection to Ethereum node failed. Reason: {str(e)}"
+                )
             else:
                 raise ConnectionError("Initial connection to Ethereum node failed.")
-
 
     def extract_data(self, model: str, context: str = Context.MAIN.INPUT):
         self.ev_extractor = EventExporter(self.w3, model, context)
@@ -47,7 +48,7 @@ if __name__ == "__main__":
         # data = dt.extract_data("gro-withdrawhandler-usdc.json")  # Filter by bool
         # data = dt.extract_data("uniswap-pool_swap.json")  # Negative int
         data = dt.extract_data("balancer-pool_changed.json")  # Negative int
-        print(data)
+        # print(data)
 
     except ConnectionError as ce:
         print(f"Connection error: {ce}")
@@ -59,8 +60,6 @@ if __name__ == "__main__":
         logger.error(f"Filter creation error: {fce}")
     except FileNotFoundError as fnf:
         """already captured in class FileUtils()"""
-    except TooManyResultsError as tmr:
-        """already captured in class EventExporter"""
     except Exception as e:
         logger.error(f"Unexpected error: {e}")
 

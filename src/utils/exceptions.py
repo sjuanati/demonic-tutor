@@ -8,9 +8,3 @@ class DataExtractionError(Exception):
 
 class FilterCreationError(Exception):
     """Raised when there's an error creating the filter params."""
-
-
-class TooManyResultsError(Exception):
-    """Raised when there are more than 10000 results getting logs"""
-
-    print(Exception)
