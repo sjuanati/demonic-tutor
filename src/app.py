@@ -4,8 +4,10 @@ from web3 import Web3
 from dotenv import load_dotenv
 from utils.context import Context
 from utils.logger import setup_logger
+from utils.block import BlockUtils
 from exporters.event import EventExporter
 from utils.exceptions import (
+    BlockUtilsError,
     DataExtractionError,
     FilterCreationError,
     InvalidConfigurationError,
@@ -33,8 +35,17 @@ class DemonicTutor:
                 raise ConnectionError("Initial connection to Ethereum node failed.")
 
     def extract_data(self, model: str, context: str = Context.MAIN.INPUT):
-        self.ev_extractor = EventExporter(self.w3, model, context)
-        return self.ev_extractor.extract_data()
+        ev_extractor = EventExporter(self.w3, model, context)
+        return ev_extractor.extract_data()
+    
+    def get_block_number_by_timestamp(self, timestamp: int):
+        block = BlockUtils(self.w3).get_closest_block_number_by_timestamp(timestamp)
+        print('timestamp', block)
+
+    def get_closest_block_number_by_date(self, date: str):
+        block = BlockUtils(self.w3).get_closest_block_number_by_date(date)
+        print('timestamp', block)
+
 
 
 if __name__ == "__main__":
@@ -47,8 +58,10 @@ if __name__ == "__main__":
         # data = dt.extract_data("gro-gtranche_withdrawal.json")  # Filter by bool
         # data = dt.extract_data("gro-withdrawhandler-usdc.json")  # Filter by bool
         # data = dt.extract_data("uniswap-pool_swap.json")  # Negative int
-        data = dt.extract_data("balancer-pool_changed.json")  # Negative int
+        # data = dt.extract_data("balancer-pool_changed.json")  # Negative int
         # print(data)
+        # dt.get_block_number_by_timestamp(1699050588)
+        dt.get_closest_block_number_by_date('20231106 06:06:00')
 
     except ConnectionError as ce:
         print(f"Connection error: {ce}")
@@ -58,35 +71,10 @@ if __name__ == "__main__":
         logger.error(f"Data extraction error: {dee}")
     except FilterCreationError as fce:
         logger.error(f"Filter creation error: {fce}")
-    except FileNotFoundError as fnf:
+    except FileNotFoundError:
         """already captured in class FileUtils()"""
+    except BlockUtilsError:
+        """already captured in class BlockUtils()"""
     except Exception as e:
         logger.error(f"Unexpected error: {e}")
 
-
-"""
-    def get_erc20_transfers(
-        self,
-        contract_addr,
-        start_block=0,
-        end_block="latest",
-        from_addr=None,
-        to_addr=None,
-    ):
-        return self.ev_extractor.get_erc20_transfers(
-            contract_addr, start_block, end_block, from_addr, to_addr
-        )
-
-    # txns = dt.get_all_transactions(
-    #     contract_address="0x204d9de758217a39149767731a87bcc32427b6ef",
-    #     start_block=18447447,  # 18228314,
-    #     end_block="latest",
-    # )
-
-    # A bit useless, at gives a bunch of tx data, but relevant info is
-    # within the events
-    def get_all_transactions(self, contract_address, start_block=0, end_block="latest"):
-        return self.tx_extractor.get_all_transactions(
-            contract_address, start_block, end_block
-        )
-"""
