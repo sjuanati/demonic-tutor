@@ -13,6 +13,7 @@ class EventParser:
         self.w3 = w3_instance
         self.addr_utils = addr_utils
         self.context = context
+        self.num_indexed_args = 0
 
     def parse_function_sig(self, signature: str) -> str:
         try:
@@ -76,12 +77,14 @@ class EventParser:
                 if "index_topic_" in arg:
                     indexed = True
                     _, arg_type, arg_name = arg.split()
+                    self.num_indexed_args += 1
                 # Check for the "indexed" keyword for the second format
                 elif "indexed" in arg:
                     indexed = True
                     parts = arg.split()
                     arg_type = parts[0]
                     arg_name = parts[-1]
+                    self.num_indexed_args += 1
                 else:
                     indexed = False
                     # Check for array type

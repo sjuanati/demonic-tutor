@@ -37,10 +37,10 @@ if __name__ == "__main__":
     try:
         dt = DemonicTutor(INFURA_URL)
     except ConnectionError as ce:
-        print(f"Connection error: {ce}")
+        logger.error(ce)
         exit()
     except Exception as e:
-        print(f"Unexpected error during initialization: {e}")
+        logger.error(f"Unexpected error during initialization: {e}")
         exit()
 
     while True:

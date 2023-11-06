@@ -6,10 +6,21 @@ from utils.exceptions import FilterEventError
 logger = setup_logger(__name__)
 
 
-def build_filter_params(config, function_sig, parsed_args, w3_instance, context):
+def build_filter_params(
+    config, function_sig, parsed_args, w3_instance, context, num_indexed_args
+):
     try:
         addr_utils = AddressUtils(w3_instance)
         topics = [function_sig]
+
+        # check if # indexed args in signature = indexed args in model->filters
+        num_indexed_args_in_model = len(config["filters"])
+        if num_indexed_args != num_indexed_args_in_model:
+            e = (
+                f"{num_indexed_args} indexed args in function, but "
+                f"{num_indexed_args_in_model} in model->filters section"
+            )
+            raise ValueError(e)
 
         for arg_type, arg_name, indexed in parsed_args:
             if indexed:

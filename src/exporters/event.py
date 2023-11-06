@@ -82,7 +82,12 @@ class EventExporter:
                 self.config["function_sig"]
             )
             filter_params = build_filter_params(
-                self.config, function_sig, parsed_args, self.w3, self.context
+                self.config,
+                function_sig,
+                parsed_args,
+                self.w3,
+                self.context,
+                self.ev_parser.num_indexed_args,
             )
 
             logs = self.get_logs_in_range(filter_params)
