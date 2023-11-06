@@ -5,11 +5,10 @@ import unittest
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from app import DemonicTutor
+from demonic_tutor import DemonicTutor
 from dotenv import load_dotenv
 from utils.file import FileUtils
 from utils.context import Context
-
 
 load_dotenv()
 INFURA_URL = os.getenv("INFURA_URL")
@@ -25,7 +24,7 @@ class EventTester(unittest.TestCase):
         Filter by indexed boolean
         LogNewWithdrawal(address indexed sender, address indexed recipient, uint256 amount, uint256 index, bool indexed tranche...);
         """
-        actual = json.loads(self.dt.extract_data("04_bool_filter.json", Context.TEST.INPUT))
+        actual = json.loads(self.dt.export_log_data("04_bool_filter.json", Context.TEST.INPUT))
         expected = self.loader.read_file("04_bool_filter.json", Context.TEST.OUTPUT)
 
         self.assertEqual(actual, expected)
@@ -36,7 +35,7 @@ class EventTester(unittest.TestCase):
         LogNewTrancheBalance(uint256[2],uint256)
         """
         actual = json.loads(
-            self.dt.extract_data("05_array_no_indices.json", Context.TEST.INPUT)
+            self.dt.export_log_data("05_array_no_indices.json", Context.TEST.INPUT)
         )
         expected = self.loader.read_file(
             "05_array_no_indices.json", Context.TEST.OUTPUT
@@ -50,14 +49,14 @@ class EventTester(unittest.TestCase):
         LogNewWithdrawal (index_topic_1 address user, ..., uint256[3] tokenAmounts)
         """
         actual_dai = json.loads(
-            self.dt.extract_data("06_array_multi_decimals_1.json", Context.TEST.INPUT)
+            self.dt.export_log_data("06_array_multi_decimals_1.json", Context.TEST.INPUT)
         )
         expected_dai = self.loader.read_file(
             "06_array_multi_decimals_1.json", Context.TEST.OUTPUT
         )
 
         actual_usdc = json.loads(
-            self.dt.extract_data("06_array_multi_decimals_2.json", Context.TEST.INPUT)
+            self.dt.export_log_data("06_array_multi_decimals_2.json", Context.TEST.INPUT)
         )
         expected_usdc = self.loader.read_file(
             "06_array_multi_decimals_2.json", Context.TEST.OUTPUT
@@ -72,7 +71,7 @@ class EventTester(unittest.TestCase):
         Swap (index_topic_1 address sender, ..., uint128 liquidity, int24 tick)
         """
         actual = json.loads(
-            self.dt.extract_data("07_negative_amount.json", Context.TEST.INPUT)
+            self.dt.export_log_data("07_negative_amount.json", Context.TEST.INPUT)
         )
         expected = self.loader.read_file("07_negative_amount.json", Context.TEST.OUTPUT)
 
@@ -84,7 +83,7 @@ class EventTester(unittest.TestCase):
         PoolBalanceChanged (..., address[] tokens, int256[] deltas, uint256[] protocolFeeAmounts)
         """
         actual = json.loads(
-            self.dt.extract_data("08-dynamic_array.json", Context.TEST.INPUT)
+            self.dt.export_log_data("08-dynamic_array.json", Context.TEST.INPUT)
         )
         expected = self.loader.read_file("08-dynamic_array.json", Context.TEST.OUTPUT)
 

@@ -3,16 +3,15 @@ import calendar
 
 from datetime import datetime
 from utils.logger import setup_logger
+from constants import ETH_GENESIS_BLOCK
 from utils.exceptions import BlockUtilsError
 
 logger = setup_logger(__name__)
 
 
 class BlockUtils:
-    TS_ERROR_MSG = "Wrong ts: {timestamp} (for ref, current ts = {current_time})"
-    RANGE_ERROR_MSG = (
-        "Ts {timestamp} out of blockchain data range {earliest_ts} to {latest_ts}"
-    )
+    TS_ERROR_MSG = "Wrong ts: {} (for reference, current ts = {})"
+    RANGE_ERROR_MSG = "Ts {} out of blockchain data range {} to {}"
 
     def __init__(self, w3_instance):
         self.w3 = w3_instance
@@ -30,7 +29,11 @@ class BlockUtils:
     def validate_timestamp(timestamp: int):
         """Validate if the provided timestamp format is correct."""
         current_time = int(time.time())
-        if not isinstance(timestamp, int) or timestamp <= 0 or timestamp > current_time:
+        if (
+            not isinstance(timestamp, int)
+            or timestamp < ETH_GENESIS_BLOCK
+            or timestamp > current_time
+        ):
             logger.error(BlockUtils.TS_ERROR_MSG.format(timestamp, current_time))
             raise BlockUtilsError()
 
@@ -73,7 +76,8 @@ class BlockUtils:
                     upper = mid - 1
 
             return lower - 1
-    
+        except BlockUtilsError:
+            raise
         except Exception as e:
             logger.error(f"Failed to get closest block number by timestamp: {e}")
             raise BlockUtilsError()
@@ -83,6 +87,4 @@ class BlockUtils:
 
         # Validate date format
         ts = self.convert_date_to_ts(date)
-
         return self.get_closest_block_number_by_timestamp(ts)
-

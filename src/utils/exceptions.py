@@ -1,11 +1,16 @@
-class InvalidConfigurationError(Exception):
-    """Raised when there's an issue with the configuration."""
+# class InvalidConfigurationError(Exception):
+#     """Raised when there's an issue with the configuration."""
 
-class DataExtractionError(Exception):
-    """Raised when there's an error during data extraction."""
+class FilterEventError(Exception):
+    """Exceptions in filters.event"""
 
-class FilterCreationError(Exception):
-    """Raised when there's an error creating the filter params."""
+class ParserEventError(Exception):
+    """Exceptions in parsers.event"""
 
 class BlockUtilsError(Exception):
     """Exceptions in utils.block"""
+
+class FileUtilsError(Exception):
+    """Exceptions in utils.file"""
+
+

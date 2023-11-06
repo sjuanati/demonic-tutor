@@ -6,6 +6,7 @@ from utils.logger import setup_logger
 from utils.address import AddressUtils
 from parsers.event import EventParser
 from filters.event import build_filter_params
+from utils.exceptions import FilterEventError, ParserEventError
 
 logger = setup_logger(__name__)
 
@@ -26,6 +27,7 @@ class EventExporter:
         self.config = FileUtils.read_file(model, context)
 
     def split_block_range(self, filters):
+        """Splits the given block range into two equal halves"""
         mid_block = (filters["fromBlock"] + filters["toBlock"]) // 2
         if mid_block == filters["fromBlock"]:
             logger.error(f"Too many results in a single block: {mid_block}")
@@ -44,6 +46,7 @@ class EventExporter:
 
     # iterative (non-recursive) binary-search approach
     def get_logs_in_range(self, params):
+        """Fetches logs in the provided block range, handling possible errors"""
         logs = []
         ranges_to_check = [params]
 
@@ -63,43 +66,55 @@ class EventExporter:
                 else:
                     logger.error(f"An unexpected error occurred: {error_data}")
                     raise e
-                
+
         return logs
 
     def extract_data(self):
+        """Parses and exports event logs, and converts the results to a CSV format"""
         events = []
         num_records = 0
 
-        function_sig = self.ev_parser.parse_function_sig(self.config["function_sig"])
-        parsed_args = self.ev_parser.parse_function_args(self.config["function_sig"])
-        filter_params = build_filter_params(
-            self.config, function_sig, parsed_args, self.w3, self.context
-        )
-
-        logs = self.get_logs_in_range(filter_params)
-
-        for log in logs:
-            # Extract transaction data
-            txn_data = self.ev_parser.parse_txn_data(log)
-
-            # Extract indexed arguments
-            indexed_data = self.ev_parser.parse_indexed_args(
-                log, parsed_args, self.config
+        try:
+            function_sig = self.ev_parser.parse_function_sig(
+                self.config["function_sig"]
+            )
+            parsed_args = self.ev_parser.parse_function_args(
+                self.config["function_sig"]
+            )
+            filter_params = build_filter_params(
+                self.config, function_sig, parsed_args, self.w3, self.context
             )
 
-            # Extract and decode non-indexed arguments
-            non_indexed_data = self.ev_parser.parse_non_indexed_args(
-                log, parsed_args, self.config
-            )
+            logs = self.get_logs_in_range(filter_params)
 
-            # merge data to build the complete item
-            events.append({**txn_data, **indexed_data, **non_indexed_data})
+            for log in logs:
+                # Extract transaction data
+                txn_data = self.ev_parser.parse_txn_data(log)
 
-            num_records += 1
+                # Extract indexed arguments
+                indexed_data = self.ev_parser.parse_indexed_args(
+                    log, parsed_args, self.config
+                )
 
-        # dump data into file
-        if self.context == Context.MAIN.INPUT:
-            logger.info(f"# records: {num_records}")
-            FileUtils().json_to_csv(events, self.model, Context.MAIN.OUTPUT)
+                # Extract and decode non-indexed arguments
+                non_indexed_data = self.ev_parser.parse_non_indexed_args(
+                    log, parsed_args, self.config
+                )
 
-        return json.dumps(events, indent=4)
+                # merge data to build the complete item
+                events.append({**txn_data, **indexed_data, **non_indexed_data})
+
+                num_records += 1
+
+            # dump data into file
+            if self.context == Context.MAIN.INPUT:
+                logger.info(f"# records: {num_records}")
+                FileUtils().json_to_csv(events, self.model, Context.MAIN.OUTPUT)
+
+            return json.dumps(events, indent=4)
+        except FilterEventError:
+            """nothing"""
+        except ParserEventError:
+            """nothing"""
+        except Exception as e:
+            logger.error(e)
