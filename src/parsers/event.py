@@ -16,6 +16,10 @@ class EventParser:
         self.num_indexed_args = 0
 
     def parse_function_sig(self, signature: str) -> str:
+        """
+        Cleans and extracts the function name and arguments from a given function
+        signature, then returns the EIP-712 hash of the cleaned signature.
+        """
         try:
             # Remove index_topic_N and "indexed" references, then strip whitespaces
             clean_signature = re.sub(
@@ -30,7 +34,7 @@ class EventParser:
                 )
             function_name = match.group(1)
 
-            # Extract argument types by splitting the string and removing argument names
+            # Extract the arguments portion from the signature enclosed in parentheses
             search = re.search(r"\((.*)\)", clean_signature)
             if not search:
                 raise ValueError(
@@ -38,6 +42,8 @@ class EventParser:
                 )
             argument_section = search.group(1)
             arguments = argument_section.split(",")
+
+            # Process each argument from the extracted section to identify their types
             argument_types = []
             for arg in arguments:
                 parts = arg.strip().split()
@@ -54,16 +60,22 @@ class EventParser:
             # Convert signature to EIP-712
             eip_712_signature = self.w3.keccak(text=clean_signature).hex()
 
+            # Logger if not executing tests
             if self.context == Context.MAIN.INPUT:
                 logger.info(f"function sig: {clean_signature}")
                 logger.info(f"function hash: {eip_712_signature}")
 
             return eip_712_signature
+
         except Exception as e:
             logger.error(e)
             raise ParserEventError()
 
     def parse_function_args(self, signature: str):
+        """
+        Parses the arguments from a function signature, identifying whether
+        each is indexed, and returns a list of argument details.
+        """
         try:
             # Extract the arguments section using regex
             argument_section = re.search(r"\((.*)\)", signature).group(1)
@@ -96,22 +108,32 @@ class EventParser:
 
                 parsed_args.append((arg_type, arg_name, indexed))
 
+            # Logger if not executing tests
             if self.context == Context.MAIN.INPUT:
                 logger.info(f"parsed args: {parsed_args}")
 
             return parsed_args
+
         except Exception as e:
             logger.error(e)
             raise ParserEventError()
 
     @staticmethod
     def parse_txn_data(log):
+        """
+        Extracts and returns the transaction hash and 
+        block number from a given log entry
+        """
         return {
             "txn_hash": log["transactionHash"].hex(),
             "block_num": log["blockNumber"],
         }
 
     def parse_indexed_args(self, log, parsed_args, config):
+        """
+        Processes indexed arguments from a log entry based on the 
+        model, decoding them and adjusting for specified decimals.
+        """
         try:
             event_data = {}
             for i, (arg_type, arg_name, _) in enumerate(
@@ -132,12 +154,16 @@ class EventParser:
 
                 event_data[arg_name] = value
             return event_data
+
         except Exception as e:
             logger.error(e)
             raise ParserEventError()
 
-    # TODO: update name / can be used for indexed args?
     def decode_and_convert(self, data_type, raw_data, decimals, index=0):
+        """
+        Decodes raw blockchain data of a given type, applies the appropriate scaling 
+        factor for its decimals, and converts it to a human-readable format.
+        """
         try:
             decoded = self.w3.eth.codec.decode([data_type], raw_data)[0]
 
@@ -157,6 +183,10 @@ class EventParser:
 
     # TODO: test non-uint arrays
     def parse_non_indexed_args(self, log, parsed_args, config):
+        """
+        Parses non-indexed arguments from a log entry, handling dynamic and 
+        fixed-size arrays, and decoding each according to type and model.
+        """
         try:
             event_data = {}
             data_offset = 0
@@ -195,12 +225,14 @@ class EventParser:
 
                     event_data[arg_name] = values
                     data_offset += EVM_WORD_SIZE
+
                 # fixed-size array
                 elif "[" in arg_type:
                     base_type = arg_type.split("[")[0]
                     length = int(arg_type.split("[")[1].split("]")[0])
                     values = []
 
+                    # Process each array item
                     for i in range(length):
                         raw_data_segment = log["data"][
                             data_offset : data_offset + EVM_WORD_SIZE
@@ -212,6 +244,7 @@ class EventParser:
                         )
                         data_offset += EVM_WORD_SIZE
                     event_data[arg_name] = values
+
                 # other types (address, uint, bool)
                 else:
                     raw_data = log["data"][data_offset : data_offset + EVM_WORD_SIZE]
@@ -221,10 +254,15 @@ class EventParser:
                     data_offset += EVM_WORD_SIZE
 
             return event_data
+
         except Exception as e:
             logger.error(e)
             raise ParserEventError()
 
     @staticmethod
     def parse_bool(hex_value: str) -> bool:
+        """
+        Determines the boolean value from a hexadecimal representation, 
+        returning True if the last character is '1'.
+        """
         return hex_value[-1] == "1"
