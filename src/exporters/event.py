@@ -128,4 +128,4 @@ class EventExporter:
         except ParserEventError:
             """nothing"""
         except Exception as e:
-            logger.error(e)
+            logger.error(f"extract_data(): {e}")

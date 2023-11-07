@@ -12,6 +12,10 @@ class EventFuncArgsParser:
         self.context = context
 
     def parse_indexed_args(self, log, parsed_args, config):
+        """
+        Returns a dictionary with all indexed arguments from a log entry.
+        E.g.: {'sender': '0xd790d', 'recipient': '0x790d', 'tranche': True}
+        """
         try:
             event_data = {}
             for i, (arg_type, arg_name) in enumerate(
@@ -27,95 +31,116 @@ class EventFuncArgsParser:
             return event_data
 
         except Exception as e:
-            logger.error(e)
+            logger.error(f"parse_indexed_args(): {e}")
             raise ParserEventError()
 
     # TODO: test non-uint arrays
     def parse_non_indexed_args(self, log, parsed_args, config):
         """
-        Returns a dictionary of all non-indexed arguments from a log entry.
+        Returns a dictionary with all non-indexed arguments from a log entry.
         E.g.:  {'amount': 33.873, 'index': 0, 'yieldTokenAmounts': 32.806, 'calcAmount': 33.873}
         """
-        try:
-            event_data = {}
-            data_offset = 0
+        event_data = {}
+        data_offset = 0
 
-            for _, (arg_type, arg_name, indexed) in enumerate(parsed_args):
-                if not indexed:
-                    decimals = config["decimals"].get(arg_name, 0)
-                    # Handle dynamic-size array types
-                    if "[]" in arg_type:
-                        event_data[arg_name], data_offset = self._parse_dynamic_array(
-                            log, arg_type, data_offset, decimals
-                        )
-                    # Handle fixed-size array types
-                    elif "[" in arg_type and "]" in arg_type:
-                        event_data[arg_name], data_offset = self._parse_fixed_array(
-                            log, arg_type, data_offset, decimals
-                        )
-                    # Handle other types
-                    else:
-                        event_data[arg_name], data_offset = self._parse_simple_type(
-                            log, arg_type, data_offset, decimals
-                        )
-            return event_data
-
-        except Exception as e:
-            logger.error(e)
-            raise ParserEventError()
+        for _, (arg_type, arg_name, indexed) in enumerate(parsed_args):
+            if not indexed:
+                decimals = config["decimals"].get(arg_name, 0)
+                # Handle dynamic-size array types
+                if "[]" in arg_type:
+                    event_data[arg_name], data_offset = self._parse_dynamic_array(
+                        log, arg_type, data_offset, decimals
+                    )
+                # Handle fixed-size array types
+                elif "[" in arg_type and "]" in arg_type:
+                    event_data[arg_name], data_offset = self._parse_fixed_array(
+                        log, arg_type, data_offset, decimals
+                    )
+                # Handle other types
+                else:
+                    event_data[arg_name], data_offset = self._parse_scalar_type(
+                        log, arg_type, data_offset, decimals
+                    )
+        return event_data
 
     def _parse_dynamic_array(self, log, arg_type, data_offset, decimals):
-        """Parses a dynamic-size array from the log data."""
-        base_type = arg_type.replace("[]", "")
+        """
+        Returns a dynamic-size array from the log data.
+        E.g.: [-7.751727026743274, 0.0] or ['0x..c599', '0x..01c3', '0x..7407']
+        """
+        try:
+            base_type = arg_type.replace("[]", "")
 
-        # Get the position (offset) where the dynamic array starts:
-        # - First 32 bytes: lenght of the array (eg: 3)
-        # - Following 32 bytes: each element of the array
-        raw_data = log["data"][data_offset : data_offset + EVM_WORD_SIZE]
-        offset = int.from_bytes(raw_data, byteorder="big")
+            # Get the position (offset) where the dynamic array starts:
+            # - First 32 bytes: lenght of the array (eg: 3)
+            # - Following 32 bytes: each element of the array
+            raw_data = log["data"][data_offset : data_offset + EVM_WORD_SIZE]
+            arr_offset = int.from_bytes(raw_data, byteorder="big")
 
-        # Get the length of the dynamic array and move past the
-        # length where the array items start
-        raw_data = log["data"][offset : offset + EVM_WORD_SIZE]
-        num_items = int.from_bytes(raw_data, byteorder="big")
-        offset += EVM_WORD_SIZE
+            # Get the length of the dynamic array and move past the
+            # length where the array items start
+            raw_data = log["data"][arr_offset : arr_offset + EVM_WORD_SIZE]
+            num_items = int.from_bytes(raw_data, byteorder="big")
+            arr_offset += EVM_WORD_SIZE
 
-        # Process each array item
-        values = []
-        for _ in range(num_items):
-            raw_data_segment = log["data"][offset : offset + EVM_WORD_SIZE]
-            values.append(
-                self.decode_and_convert(base_type, raw_data_segment, decimals)
-            )
-            offset += EVM_WORD_SIZE
+            # Process each array item
+            values = []
+            for _ in range(num_items):
+                raw_data_segment = log["data"][arr_offset : arr_offset + EVM_WORD_SIZE]
+                values.append(
+                    self.decode_and_convert(base_type, raw_data_segment, decimals)
+                )
+                arr_offset += EVM_WORD_SIZE
 
-        data_offset += EVM_WORD_SIZE
-
-        return values, data_offset
-
-    def _parse_fixed_array(self, log, arg_type, data_offset, decimals):
-        """Parses a fixed-size array from the log data."""
-        base_type = arg_type.split("[")[0]
-        length = int(arg_type.split("[")[1].split("]")[0])
-        values = []
-
-        # Process each array item
-        for i in range(length):
-            raw_data_segment = log["data"][data_offset : data_offset + EVM_WORD_SIZE]
-            values.append(
-                self.decode_and_convert(base_type, raw_data_segment, decimals, i)
-            )
             data_offset += EVM_WORD_SIZE
 
-        return values, data_offset
+            return values, data_offset
 
-    def _parse_simple_type(self, log, arg_type, data_offset, decimals):
-        """Parses a simple non-array type from the log data."""
-        raw_data = log["data"][data_offset : data_offset + EVM_WORD_SIZE]
-        value = self.decode_and_convert(arg_type, raw_data, decimals)
-        data_offset += EVM_WORD_SIZE
+        except Exception as e:
+            logger.error(f"_parse_dynamic_array(): {e}")
+            raise ParserEventError()
 
-        return value, data_offset
+    def _parse_fixed_array(self, log, arg_type, data_offset, decimals):
+        """
+        Returns a fixed-size array from the log data.
+        E.g.: [577758.84, 2498856.81]
+        """
+        try:
+            base_type = arg_type.split("[")[0]
+            length = int(arg_type.split("[")[1].split("]")[0])
+            values = []
+
+            # Process each array item
+            for i in range(length):
+                raw_data_segment = log["data"][
+                    data_offset : data_offset + EVM_WORD_SIZE
+                ]
+                values.append(
+                    self.decode_and_convert(base_type, raw_data_segment, decimals, i)
+                )
+                data_offset += EVM_WORD_SIZE
+
+            return values, data_offset
+
+        except Exception as e:
+            logger.error(f"_parse_fixed_array(): {e}")
+            raise ParserEventError()
+
+    def _parse_scalar_type(self, log, arg_type, data_offset, decimals):
+        """
+        Returns ascalar type from the log data (non indexed / non array arguments)
+        E.g.: 306.27 or 0x..49aC
+        """
+        try:
+            raw_data = log["data"][data_offset : data_offset + EVM_WORD_SIZE]
+            value = self.decode_and_convert(arg_type, raw_data, decimals)
+            data_offset += EVM_WORD_SIZE
+
+            return value, data_offset
+
+        except Exception as e:
+            logger.error(f"_parse_scalar_type(): {e}")
+            raise ParserEventError()
 
     # TODO: other types: bool, enums, mappings, strings
     def decode_and_convert(self, data_type, raw_data, decimals, index=0):
@@ -123,8 +148,9 @@ class EventFuncArgsParser:
         try:
             decoded = self.w3.eth.codec.decode([data_type], raw_data)[0]
 
-            # TODO: this might not be required. Assume every dynamic item will have the same decimal
-            if isinstance(decimals, list):  # Fetch the right decimal if it's an array
+            # dev: Not needed if every dynamic item will have the same decimal
+            # Fetch the right decimal if it's an array
+            if isinstance(decimals, list):
                 decimals = decimals[index]
 
             if data_type.startswith("uint") or data_type.startswith("int"):
@@ -138,25 +164,17 @@ class EventFuncArgsParser:
                 return decoded.hex()
 
             return decoded
+
         except Exception as e:
-            logger.error(e)
+            logger.error(f"decode_and_convert(): {e}")
             raise ParserEventError()
 
     @staticmethod
     def parse_txn_data(log):
         """
-        Extracts and returns the transaction hash and
-        block number from a given log entry
+        Returns the transaction hash and block number from a given log entry
         """
         return {
             "txn_hash": log["transactionHash"].hex(),
             "block_num": log["blockNumber"],
         }
-
-    @staticmethod
-    def parse_bool(hex_value: str) -> bool:
-        """
-        Determines the boolean value from a hexadecimal representation,
-        returning True if the last character is '1'.
-        """
-        return hex_value[-1] == "1"

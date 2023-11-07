@@ -2,7 +2,7 @@
     {
         "txn_hash": "0xeef62288f7fa1cd2f81cb82482662aaeea8d862f35c2d367d7acb8530764acf6",
         "block_num": 18280932,
-        "poolId": "0x702605f43471183158938c1a3e5f5a359d7b31ba00020000000000000000009f",
+        "poolId": "702605f43471183158938c1a3e5f5a359d7b31ba00020000000000000000009f",
         "liquidityProvider": "0xbaa32387bd55553ec806622d524b12bbb8242a19",
         "tokens": [
             "0x3ec8798b81485a254928b70cda1cf0a2bb0b74d7",
