@@ -76,7 +76,8 @@ class EventFuncArgsList:
         self.num_indexed_args += 1
         return arg_type, arg_name, True
 
-    def _parse_non_indexed_argument(self, arg: str) -> tuple:
+    @staticmethod
+    def _parse_non_indexed_argument(arg: str) -> tuple:
         """Parses non-indexed arguments, handling normal and array types."""
         if "[" in arg and "]" in arg:
             arg_type = re.match(r"(.+)\s", arg).group(1)

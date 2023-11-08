@@ -136,7 +136,8 @@ class EventFuncArgsParser:
             logger.error(f"_parse_fixed_array(): {e}")
             raise ParserEventError()
 
-    def _parse_dynamic_scalar(self, log, arg_type, data_offset):
+    @staticmethod
+    def _parse_dynamic_scalar(log, arg_type, data_offset):
         """
         Returns a dynamic scalar (string or bytes) from the log data.
         """

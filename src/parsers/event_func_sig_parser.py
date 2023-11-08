@@ -60,7 +60,6 @@ class EventFuncSigParser:
             argument_types.append(parts[0])
         return argument_types
 
-
     def _convert_to_eip712(self, cleaned_signature: str) -> str:
         # Convert signature to EIP-712
         eip_712_signature = self.w3.keccak(text=cleaned_signature).hex()

@@ -59,10 +59,3 @@ if __name__ == "__main__":
             break
         if choice in ["1", "2", "3"]:
             input("Press Enter to continue...")
-
-"""
-    except ConnectionError as ce:
-        print(f"Connection error: {ce}")
-    except InvalidConfigurationError as ice:
-        logger.error(f"Configuration error: {ice}")
-"""
