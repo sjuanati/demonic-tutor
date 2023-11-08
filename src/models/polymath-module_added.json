@@ -1,0 +1,20 @@
+{
+    "contract_addr": "0xc53b9b1d3dd035259c6d414b5e790755bca5f667",
+    "start_block": 17677591,
+    "end_block": 17677591,
+    "function_sig": "ModuleAdded (uint8[] _types, index_topic_1 bytes32 _name, index_topic_2 address _moduleFactory, address _module, uint256 _moduleCost, uint256 _budget, bytes32 _label, bool _archived)",
+    "filters": {
+        "_name": null,
+        "_moduleFactory": null
+    },
+    "decimals": {
+        "_types": 0,
+        "_name": null,
+        "_moduleFactory": null,
+        "_module": null,
+        "_moduleCost": 0,
+        "_budget": 18,
+        "_label": null,
+        "_archived": null 
+    }
+}

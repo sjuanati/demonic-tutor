@@ -1,6 +1,6 @@
 venv
 gro_env
-data
+src/data
 .env
 .DS_Store
 __pycache__/

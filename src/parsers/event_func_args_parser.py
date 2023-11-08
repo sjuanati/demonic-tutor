@@ -198,8 +198,9 @@ class EventFuncArgsParser:
             elif data_type == "address":
                 return self.addr_utils.clean_address(decoded)
 
-            # Convert bytes type
-            elif data_type.startswith("bytes"):
+            # Convert bytes and string type
+            # @DEV: indexed bytes and string are Keccak-256 hashed (32-bytes fixed size)
+            elif data_type.startswith("bytes") or data_type == 'string':
                 return decoded.hex()
 
             return decoded

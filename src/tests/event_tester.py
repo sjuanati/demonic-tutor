@@ -19,9 +19,19 @@ class EventTester(unittest.TestCase):
         self.dt = DemonicTutor(INFURA_URL)
         self.loader = FileUtils()
 
+    def test_indexed_bytes32(self):
+        """
+        Indexed bytes32 argument
+        ModuleAdded (uint8[] _types, index_topic_1 bytes32 _name, ...)
+        """
+        actual = json.loads(self.dt.export_log_data("02_indexed_bytes32.json", Context.TEST.INPUT))
+        expected = self.loader.read_file("02_indexed_bytes32.json", Context.TEST.OUTPUT)
+
+        self.assertEqual(actual, expected)
+
     def test_string(self):
         """
-        Filter by indexed boolean
+        String argument
         RegisterTicker (index_topic_1 address _owner, string _ticker, ...)
         """
         actual = json.loads(self.dt.export_log_data("03_string.json", Context.TEST.INPUT))

@@ -1,0 +1,13 @@
+[
+    {
+        "txn_hash": "0x1d3eafe35feca44837c400a4c85cd3aa2fcc0d88bbc7710f5c95209b5e260bf8",
+        "block_num": 17677573,
+        "_owner": "0x60b86262801dbf26a792392b37ec6b00b187cc4f",
+        "_registrationDate": 1689166019,
+        "_expiryDate": 1694350019,
+        "_ticker": "SLT-000001",
+        "_fromAdmin": false,
+        "_registrationFeePoly": 1000.0,
+        "_registrationFeeUsd": 20.0
+    }
+]

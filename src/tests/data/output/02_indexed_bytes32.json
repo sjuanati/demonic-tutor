@@ -1,0 +1,17 @@
+[
+    {
+        "txn_hash": "0xcd793c8125bcedae28b0862b283ddcae371ced8488ae2a6f975a68baef98c082",
+        "block_num": 17677591,
+        "_name": "47656e6572616c5472616e736665724d616e6167657200000000000000000000",
+        "_moduleFactory": "0x5fafcfc0afd80d2f95133170172b045024ca8fd1",
+        "_types": [
+            2,
+            6
+        ],
+        "_module": "0xfd326f612997251c736f781b38392fc86aa8243a",
+        "_moduleCost": 0,
+        "_budget": 0.0,
+        "_label": "0000000000000000000000000000000000000000000000000000000000000000",
+        "_archived": false
+    }
+]
