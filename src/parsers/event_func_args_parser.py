@@ -35,39 +35,43 @@ class EventFuncArgsParser:
             logger.error(f"parse_indexed_args(): {e}")
             raise ParserEventError()
 
-    # TODO: test non-uint arrays
     def parse_non_indexed_args(self, log, parsed_args, config):
         """
         Returns a dictionary with all non-indexed arguments from a log entry.
         E.g.:  {'amount': 33.873, 'index': 0, 'yieldTokenAmounts': 32.806, 'calcAmount': 33.873}
         """
-        event_data = {}
-        data_offset = 0
+        try:
+            event_data = {}
+            data_offset = 0
 
-        for _, (arg_type, arg_name, indexed) in enumerate(parsed_args):
-            if not indexed:
-                decimals = config["decimals"].get(arg_name, 0)
-                # Handle dynamic-size array types
-                if "[]" in arg_type:
-                    event_data[arg_name], data_offset = self._parse_dynamic_array(
-                        log, arg_type, data_offset, decimals
-                    )
-                # Handle fixed-size array types
-                elif "[" in arg_type and "]" in arg_type:
-                    event_data[arg_name], data_offset = self._parse_fixed_array(
-                        log, arg_type, data_offset, decimals
-                    )
-                # Handle dynamic-size scalars
-                elif arg_type == "string" or arg_type == "bytes":
-                    event_data[arg_name], data_offset = self._parse_dynamic_scalar(
-                        log, arg_type, data_offset
-                    )
-                # Handle fixed-size scalars
-                else:
-                    event_data[arg_name], data_offset = self._parse_scalar_type(
-                        log, arg_type, data_offset, decimals
-                    )
-        return event_data
+            for _, (arg_type, arg_name, indexed) in enumerate(parsed_args):
+                if not indexed:
+                    decimals = config["decimals"].get(arg_name, 0)
+                    # Handle dynamic-size array types
+                    if "[]" in arg_type:
+                        event_data[arg_name], data_offset = self._parse_dynamic_array(
+                            log, arg_type, data_offset, decimals
+                        )
+                    # Handle fixed-size array types
+                    elif "[" in arg_type and "]" in arg_type:
+                        event_data[arg_name], data_offset = self._parse_fixed_array(
+                            log, arg_type, data_offset, decimals
+                        )
+                    # Handle dynamic-size scalars
+                    elif arg_type == "string" or arg_type == "bytes":
+                        event_data[arg_name], data_offset = self._parse_dynamic_scalar(
+                            log, arg_type, data_offset
+                        )
+                    # Handle fixed-size scalars
+                    else:
+                        event_data[arg_name], data_offset = self._parse_fixed_scalar(
+                            log, arg_type, data_offset, decimals
+                        )
+            return event_data
+
+        except Exception as e:
+            logger.error(f"parse_non_indexed_args(): {e}")
+            raise ParserEventError()
 
     def _parse_dynamic_array(self, log, arg_type, data_offset, decimals):
         """
@@ -134,7 +138,7 @@ class EventFuncArgsParser:
 
     def _parse_dynamic_scalar(self, log, arg_type, data_offset):
         """
-        Returns a string or bytes from the log data.
+        Returns a dynamic scalar (string or bytes) from the log data.
         """
         try:
             # Get the position (offset) where the dynamic string starts:
@@ -166,9 +170,9 @@ class EventFuncArgsParser:
             logger.error(f"_parse_dynamic_string(): {e}")
             raise ParserEventError()
 
-    def _parse_scalar_type(self, log, arg_type, data_offset, decimals):
+    def _parse_fixed_scalar(self, log, arg_type, data_offset, decimals):
         """
-        Returns ascalar type from the log data (non indexed / non array arguments)
+        Returns a fixed-size scalar type from the log data
         E.g.: 306.27 or 0x..49aC
         """
         try:
