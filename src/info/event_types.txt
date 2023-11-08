@@ -1,0 +1,36 @@
+Static Types:
+
+1. bool - Represents a boolean value (true or false).
+2. uint - Unsigned integer of various sizes (e.g., uint256, uint8, etc.).
+3. int - Signed integer of various sizes (e.g., int256, int8, etc.).
+4. address - Holds a 20-byte value (size of an Ethereum address).
+5. fixed - Fixed point numbers of various sizes (not commonly used).
+6. ufixed - Unsigned fixed point numbers (not commonly used).
+7. Fixed-size byte arrays - bytes1 to bytes32.
+8. enum - User-defined type consisting of a finite set of constant values.
+9. Solidity's native fixed-size array types (e.g., uint[3], bool[10], etc.).
+10. function - Encodes a function identifier as a bytes24 type.
+
+Dynamic Types:
+
+1. string - A dynamic array that represents a sequence of characters.
+2. bytes - A dynamic array of bytes.
+3. Dynamic-size array types - Arrays of dynamic or fixed-size types that can have 
+   an arbitrary number of elements (e.g., uint[], address[], bytes[], etc.).
+4. struct - User-defined types that can contain both static and dynamic types.
+
+Each event parameter can be marked as indexed, which allows them to be searched for.
+However, there are limitations on the types of parameters that can be indexed:
+
+- Up to three parameters can be marked as indexed in a single event.
+- Only the following types can be indexed: bool, uint of all sizes, int of all sizes, 
+  address, fixed, ufixed, enums, and fixed-size byte arrays (bytes1 to bytes32).
+- Dynamic types like string, bytes, and dynamic arrays cannot be indexed. If you want
+  to index the hash of a dynamic value, you must declare the indexed parameter as
+  bytes32 and manually hash the dynamic value (e.g., using keccak256).
+
+In the event data, each of the static parameters consumes exactly 32 bytes, regardless
+of whether it is smaller (in which case it is right-padded with zeros). Dynamic types,
+on the other hand, are represented by a 32-byte pointer to the position of the data
+within the event log data structure, followed by the data itself. The length of the
+dynamic data is prefixed before the actual data.

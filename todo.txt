@@ -1,8 +1,8 @@
 TODO:
-- menu to 1) Extract data 2) block # given a timestamp, etc
 - measure start & end time for each extraction
 - multicall to get multiple balances based on list of addresses
 - support funcs: timestamp to block, contract call at given block,.. -> create menu
+- multichain
 
 
 Tests:
@@ -20,3 +20,4 @@ DONE:
 - tests (better without mock, to get exact expected values after every parsing change)
 - dump extractions to csv
 - iterative/recursive extractions
+- menu to 1) Extract data 2) block # given a timestamp, etc
