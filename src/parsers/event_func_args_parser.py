@@ -1,14 +1,15 @@
 from constants import EVM_WORD_SIZE
 from utils.logger import setup_logger
+from utils.address import AddressUtils
 from utils.exceptions import ParserEventError
 
 logger = setup_logger(__name__)
 
 
 class EventFuncArgsParser:
-    def __init__(self, w3_instance, addr_utils, context):
+    def __init__(self, w3_instance, context):
         self.w3 = w3_instance
-        self.addr_utils = addr_utils
+        self.addr_utils = AddressUtils(self.w3)
         self.context = context
 
     def parse_indexed_args(self, log, parsed_args, config):

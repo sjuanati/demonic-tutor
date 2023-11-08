@@ -25,11 +25,12 @@ def build_filter_params(
         for arg_type, arg_name, indexed in parsed_args:
             if indexed:
                 filter_value = config["filters"].get(arg_name)
+                # TODO: include bytes
                 if filter_value is not None:
                     if arg_type == "address":
                         filter_value = addr_utils.addr_to_hex(filter_value)
                     # TODO: test filtering by integer
-                    elif arg_type.startswith("uint"):
+                    elif arg_type.startswith("uint") or arg_type.startswith("int"):
                         filter_value = hex(filter_value)
                     elif isinstance(filter_value, bool):
                         filter_value = "0x{:064x}".format(int(filter_value))
@@ -49,6 +50,7 @@ def build_filter_params(
             logger.info(f"filter: {filter_params}")
 
         return filter_params
+
     except Exception as e:
-        logger.error(e)
+        logger.error(f"build_filter_params(): {e}")
         raise FilterEventError()
