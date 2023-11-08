@@ -1,0 +1,13 @@
+{
+    "contract_addr": "0x156389b30ae9e5ca8ec9e55ff529738480e42214",
+    "start_block": 9436345,
+    "end_block": 9436345,
+    "function_sig": "LogicContractSet (string _version, uint256 _upgrade, address _logicContract, bytes _upgradeData)",
+    "filters": {},
+    "decimals": {
+        "_version": null,
+        "_upgrade": 0,
+        "_logicContract": null,
+        "_upgradeData": null
+    }
+}

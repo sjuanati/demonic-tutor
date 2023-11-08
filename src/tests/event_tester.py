@@ -19,6 +19,16 @@ class EventTester(unittest.TestCase):
         self.dt = DemonicTutor(INFURA_URL)
         self.loader = FileUtils()
 
+    def test_dynamic_string_and_bytes(self):
+        """
+        Non-indexed dynamic string and bytes arguments
+        LogicContractSet (string _version, uint256 _upgrade, address _logicContract, bytes _upgradeData)
+        """
+        actual = json.loads(self.dt.export_log_data("01_dynamic_string_and_bytes.json", Context.TEST.INPUT))
+        expected = self.loader.read_file("01_dynamic_string_and_bytes.json", Context.TEST.OUTPUT)
+
+        self.assertEqual(actual, expected)
+
     def test_indexed_bytes32(self):
         """
         Indexed bytes32 argument

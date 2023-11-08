@@ -57,12 +57,12 @@ class EventFuncArgsParser:
                     event_data[arg_name], data_offset = self._parse_fixed_array(
                         log, arg_type, data_offset, decimals
                     )
-                # Handle dynamic-size strings
-                elif arg_type == "string":
-                    event_data[arg_name], data_offset = self._parse_dynamic_string(
-                        log, data_offset
+                # Handle dynamic-size scalars
+                elif arg_type == "string" or arg_type == "bytes":
+                    event_data[arg_name], data_offset = self._parse_dynamic_scalar(
+                        log, arg_type, data_offset
                     )
-                # Handle other types
+                # Handle fixed-size scalars
                 else:
                     event_data[arg_name], data_offset = self._parse_scalar_type(
                         log, arg_type, data_offset, decimals
@@ -132,9 +132,9 @@ class EventFuncArgsParser:
             logger.error(f"_parse_fixed_array(): {e}")
             raise ParserEventError()
 
-    def _parse_dynamic_string(self, log, data_offset):
+    def _parse_dynamic_scalar(self, log, arg_type, data_offset):
         """
-        Returns a string from the log data.
+        Returns a string or bytes from the log data.
         """
         try:
             # Get the position (offset) where the dynamic string starts:
@@ -151,8 +151,11 @@ class EventFuncArgsParser:
             # Extract the string data
             raw_string_data = log["data"][str_offset : str_offset + str_length]
 
-            # Decode the string data from bytes to a UTF-8 string
-            decoded_string = raw_string_data.decode("utf-8")
+            # Decode the scalar type, applying UTF-8 if string
+            if arg_type == "string":
+                decoded_string = raw_string_data.decode("utf-8")
+            else:
+                decoded_string = raw_string_data.hex()
 
             # Update data_offset by the size of the offset
             data_offset += EVM_WORD_SIZE
@@ -200,7 +203,7 @@ class EventFuncArgsParser:
 
             # Convert bytes and string type
             # @DEV: indexed bytes and string are Keccak-256 hashed (32-bytes fixed size)
-            elif data_type.startswith("bytes") or data_type == 'string':
+            elif data_type.startswith("bytes") or data_type == "string":
                 return decoded.hex()
 
             return decoded

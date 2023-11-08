@@ -1,0 +1,10 @@
+[
+    {
+        "txn_hash": "0x7c71e401087daf2453427470108711cf3556e7bef3cf5ed0b4ec42c16cd76272",
+        "block_num": 9436345,
+        "_version": "3.0.1",
+        "_upgrade": 1,
+        "_logicContract": "0x5a01b46752c9da7a11f8cfd0397a9a1dd5fa4756",
+        "_upgradeData": "0x1613ec9d"
+    }
+]
