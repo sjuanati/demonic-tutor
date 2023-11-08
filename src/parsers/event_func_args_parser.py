@@ -58,7 +58,7 @@ class EventFuncArgsParser:
                         log, arg_type, data_offset, decimals
                     )
                 # Handle dynamic-size strings
-                elif arg_type == 'string':
+                elif arg_type == "string":
                     event_data[arg_name], data_offset = self._parse_dynamic_string(
                         log, data_offset
                     )
@@ -139,20 +139,20 @@ class EventFuncArgsParser:
         try:
             # Get the position (offset) where the dynamic string starts:
             # - First 32 bytes: offset of the string data (eg: 0x80)
-            raw_data = log["data"][data_offset:data_offset + EVM_WORD_SIZE]
+            raw_data = log["data"][data_offset : data_offset + EVM_WORD_SIZE]
             str_offset = int.from_bytes(raw_data, byteorder="big")
 
             # Get the length of the dynamic string and move past the
             # length where the string data starts
-            raw_data = log["data"][str_offset:str_offset + EVM_WORD_SIZE]
+            raw_data = log["data"][str_offset : str_offset + EVM_WORD_SIZE]
             str_length = int.from_bytes(raw_data, byteorder="big")
             str_offset += EVM_WORD_SIZE
 
             # Extract the string data
-            raw_string_data = log["data"][str_offset:str_offset + str_length]
+            raw_string_data = log["data"][str_offset : str_offset + str_length]
 
             # Decode the string data from bytes to a UTF-8 string
-            decoded_string = raw_string_data.decode('utf-8')
+            decoded_string = raw_string_data.decode("utf-8")
 
             # Update data_offset by the size of the offset
             data_offset += EVM_WORD_SIZE
@@ -162,7 +162,6 @@ class EventFuncArgsParser:
         except Exception as e:
             logger.error(f"_parse_dynamic_string(): {e}")
             raise ParserEventError()
-
 
     def _parse_scalar_type(self, log, arg_type, data_offset, decimals):
         """
@@ -180,24 +179,26 @@ class EventFuncArgsParser:
             logger.error(f"_parse_scalar_type(): {e}")
             raise ParserEventError()
 
-    # TODO: other types: bool, enums, mappings, strings
     def decode_and_convert(self, data_type, raw_data, decimals, index=0):
         """Decodes raw blockchain data of a given type into a human-readable format."""
         try:
             decoded = self.w3.eth.codec.decode([data_type], raw_data)[0]
 
-            # dev: Not needed if every dynamic item will have the same decimal
-            # Fetch the right decimal if it's an array
+            # Fetch the right decimal if it's an array (get 0-index by default)
             if isinstance(decimals, list):
                 decimals = decimals[index]
 
+            # Convert integer type
             if data_type.startswith("uint") or data_type.startswith("int"):
                 multiplier = 10**decimals
-                return decoded / multiplier
+                result = decoded / multiplier
+                return result if decimals > 0 else int(result)
 
+            # Convert address type
             elif data_type == "address":
                 return self.addr_utils.clean_address(decoded)
 
+            # Convert bytes type
             elif data_type.startswith("bytes"):
                 return decoded.hex()
 
