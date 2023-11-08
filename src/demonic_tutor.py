@@ -57,7 +57,9 @@ class DemonicTutor:
             if not model:
                 model = input("Enter the model for log extraction (src/models): ")
             ev_exporter = EventExporter(self.w3, model, context)
-            return ev_exporter.extract_data()
+            events = ev_exporter.extract_data()
+            # print(events) # to add new tests
+            return events
         except FileUtilsError:
             """handled in utils.file"""
         except FilterEventError:

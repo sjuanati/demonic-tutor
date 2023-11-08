@@ -1,0 +1,20 @@
+{
+    "contract_addr": "0x240f9f86b1465bf1b8eb29bc88cbf65573dfdd97",
+    "start_block": 17677573,
+    "end_block": 17677573,
+    "function_sig": "RegisterTicker (index_topic_1 address _owner, string _ticker, index_topic_2 uint256 _registrationDate, index_topic_3 uint256 _expiryDate, bool _fromAdmin, uint256 _registrationFeePoly, uint256 _registrationFeeUsd)",
+    "filters": {
+        "_owner": null,
+        "_registrationDate": null,
+        "_expiryDate": null
+    },
+    "decimals": {
+        "_owner": null,
+        "_ticker": null,
+        "_registrationDate": 0,
+        "_expiryDate": 0,
+        "_fromAdmin": null,
+        "_registrationFeePoly": 18,
+        "_registrationFeeUsd": 18
+    }
+}

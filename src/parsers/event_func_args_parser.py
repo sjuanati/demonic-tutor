@@ -57,6 +57,11 @@ class EventFuncArgsParser:
                     event_data[arg_name], data_offset = self._parse_fixed_array(
                         log, arg_type, data_offset, decimals
                     )
+                # Handle dynamic-size strings
+                elif arg_type == 'string':
+                    event_data[arg_name], data_offset = self._parse_dynamic_string(
+                        log, data_offset
+                    )
                 # Handle other types
                 else:
                     event_data[arg_name], data_offset = self._parse_scalar_type(
@@ -126,6 +131,38 @@ class EventFuncArgsParser:
         except Exception as e:
             logger.error(f"_parse_fixed_array(): {e}")
             raise ParserEventError()
+
+    def _parse_dynamic_string(self, log, data_offset):
+        """
+        Returns a string from the log data.
+        """
+        try:
+            # Get the position (offset) where the dynamic string starts:
+            # - First 32 bytes: offset of the string data (eg: 0x80)
+            raw_data = log["data"][data_offset:data_offset + EVM_WORD_SIZE]
+            str_offset = int.from_bytes(raw_data, byteorder="big")
+
+            # Get the length of the dynamic string and move past the
+            # length where the string data starts
+            raw_data = log["data"][str_offset:str_offset + EVM_WORD_SIZE]
+            str_length = int.from_bytes(raw_data, byteorder="big")
+            str_offset += EVM_WORD_SIZE
+
+            # Extract the string data
+            raw_string_data = log["data"][str_offset:str_offset + str_length]
+
+            # Decode the string data from bytes to a UTF-8 string
+            decoded_string = raw_string_data.decode('utf-8')
+
+            # Update data_offset by the size of the offset
+            data_offset += EVM_WORD_SIZE
+
+            return decoded_string, data_offset
+
+        except Exception as e:
+            logger.error(f"_parse_dynamic_string(): {e}")
+            raise ParserEventError()
+
 
     def _parse_scalar_type(self, log, arg_type, data_offset, decimals):
         """
