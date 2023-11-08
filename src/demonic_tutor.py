@@ -55,7 +55,8 @@ class DemonicTutor:
         # eg: gro-gtranche_withdrawal.json
         try:
             if not model:
-                model = input("Enter the model for log extraction (src/models): ")
+                user_input = input("Enter the model for log extraction (src/models): ")
+                model = user_input if user_input else "default.json"
             ev_exporter = EventExporter(self.w3, model, context)
             events = ev_exporter.extract_data()
             # print(events) # to add new tests

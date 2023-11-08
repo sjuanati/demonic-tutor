@@ -19,7 +19,12 @@ logger = setup_logger(__name__)
 
 
 class EventExporter:
-    def __init__(self, w3_instance, model: str, context: str = Context.MAIN.INPUT):
+    def __init__(
+        self,
+        w3_instance,
+        model: str,
+        context: str = Context.MAIN.INPUT,
+    ):
         self.model = model
         self.w3 = w3_instance
         self.context = context
@@ -82,7 +87,7 @@ class EventExporter:
                 FileUtils().json_to_csv(events, self.model, Context.MAIN.OUTPUT)
 
             return json.dumps(events, indent=4)
-        
+
         except FilterEventError:
             """handled in function build_filter_params()"""
         except ParserEventError:
