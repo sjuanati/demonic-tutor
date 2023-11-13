@@ -26,6 +26,7 @@ class BlockUtils:
             raise BlockUtilsError()
 
     @staticmethod
+    # TODO: depends on network
     def validate_timestamp(timestamp: int):
         """Validate if the provided timestamp format is correct."""
         current_time = int(time.time())

@@ -58,7 +58,7 @@ class DemonicTutor:
         try:
             timestamp = int(input("Enter a unix timestamp: "))
             block = BlockUtils(self.w3).get_closest_block_number_by_timestamp(timestamp)
-            print(f"eth block: {block}")
+            print(f"block: {block}")
         except ValueError as e:
             logger.error(e)
         except BlockUtilsError:
