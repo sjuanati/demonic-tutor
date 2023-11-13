@@ -1,0 +1,15 @@
+{
+    "contract_addr": "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063",
+    "start_block": 48178750,
+    "end_block": 48179750,
+    "function_sig": "Transfer (index_topic_1 address from, index_topic_2 address to, uint256 value)",
+    "filters": {
+        "from": null,
+        "to": null
+    },
+    "decimals": {
+        "from": null,
+        "to": null,
+        "value": 18
+    }
+}

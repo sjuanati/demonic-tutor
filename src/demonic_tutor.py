@@ -78,7 +78,7 @@ class DemonicTutor:
         try:
             if not model:
                 user_input = input("Enter the model for log extraction (src/models): ")
-                model = user_input if user_input else "default.json"
+                model = user_input if user_input else "default_event.json"
             ev_exporter = EventExporter(self.w3, model, context)
             events = ev_exporter.extract_data()
             # print(events) # to add new tests
