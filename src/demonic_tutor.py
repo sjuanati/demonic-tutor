@@ -37,10 +37,10 @@ class DemonicTutor:
                 self.w3.eth.block_number
             except Exception as e:
                 raise ConnectionError(
-                    f"Initial connection to Ethereum node failed. Reason: {str(e)}"
+                    f"Initial connection to node provider failed. Reason: {str(e)}"
                 )
             else:
-                raise ConnectionError("Initial connection to Ethereum node failed.")
+                raise ConnectionError("Initial connection to node provider failed.")
 
     def change_network(self):
         num_networks = len(NETWORKS) - 1

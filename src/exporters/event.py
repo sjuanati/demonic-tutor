@@ -112,8 +112,11 @@ class EventExporter:
 
             except ValueError as e:
                 error_data = str(e)
-                if "'code': -32005" in error_data:
+                if "'message': 'query returned more than 10000 results" in error_data:
                     ranges_to_check.extend(self._split_block_range(current_range))
+                elif "'message': 'limit exceeded'" in error_data:
+                    logger.error(f"Limit error: {error_data}")
+                    raise e
                 else:
                     logger.error(f"An unexpected error occurred: {error_data}")
                     raise e
@@ -124,6 +127,7 @@ class EventExporter:
     def _split_block_range(filters):
         """Splits the given block range into two equal halves"""
         mid_block = (filters["fromBlock"] + filters["toBlock"]) // 2
+        # safety check (1 block can't be further divided)
         if mid_block == filters["fromBlock"]:
             logger.error(f"Too many results in a single block: {mid_block}")
             return []
