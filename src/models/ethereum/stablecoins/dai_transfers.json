@@ -4,12 +4,12 @@
     "end_block": 18473542,
     "function_sig": "Transfer (index_topic_1 address src, index_topic_2 address dst, uint256 wad)",
     "filters": {
-        "from": null,
-        "to": null
+        "src": null,
+        "dst": null
     },
     "decimals": {
-        "from": null,
-        "to": 18,
-        "value": 18
+        "src": null,
+        "dst": null,
+        "wad": 18
     }
 }

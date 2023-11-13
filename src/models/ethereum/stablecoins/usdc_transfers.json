@@ -9,7 +9,7 @@
     },
     "decimals": {
         "from": null,
-        "to": 6,
+        "to": null,
         "value": 6
     }
 }
