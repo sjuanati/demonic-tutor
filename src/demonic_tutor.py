@@ -1,6 +1,7 @@
 import os
 
 from web3 import Web3
+from constants import NETWORKS
 from dotenv import load_dotenv
 from utils.context import Context
 from utils.block import BlockUtils
@@ -12,14 +13,20 @@ from utils.exceptions import (
     FilterEventError,
 )
 
+
 load_dotenv()
-INFURA_URL = os.getenv("INFURA_URL")
 logger = setup_logger(__name__)
 
 
 class DemonicTutor:
-    def __init__(self, provider_url):
+    def __init__(self, network):
+        self.network = network
+        self.set_network(network)
+
+    def set_network(self, network: str):
+        provider_url = os.getenv(f"PROVIDER_{network}")
         self.w3 = Web3(Web3.HTTPProvider(provider_url))
+        self.network = network
         if not self.w3.is_connected():
             try:
                 # Try some dummy operation to trigger an exception
@@ -31,6 +38,18 @@ class DemonicTutor:
                 )
             else:
                 raise ConnectionError("Initial connection to Ethereum node failed.")
+
+    def change_network(self):
+        num_networks = len(NETWORKS) - 1
+        print(f"Available networks:")
+        for i, network in enumerate(NETWORKS.values()):
+            print(f"   {i} -> {network}")
+        index_option = int(input(f"Choose between 0 and {num_networks}: "))
+        if isinstance(index_option, int) and 0 <= index_option <= num_networks:
+            network = list(NETWORKS.values())[index_option]
+            self.set_network(network)
+        else:
+            input("Wrong option selected -> network not changed")
 
     def get_block_number_by_timestamp(self):
         try:

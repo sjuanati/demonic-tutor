@@ -1,4 +1,4 @@
-"""eg Github search: "bytes32[] indexed" """
+"""e.g.: Github search: "bytes32[] indexed" """
 
 import os
 import sys
@@ -7,18 +7,16 @@ import unittest
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from demonic_tutor import DemonicTutor
 from dotenv import load_dotenv
+from constants import NETWORKS
 from utils.file import FileUtils
 from utils.context import Context
-
-load_dotenv()
-INFURA_URL = os.getenv("INFURA_URL")
+from demonic_tutor import DemonicTutor
 
 
 class EventTester(unittest.TestCase):
     def setUp(self):
-        self.dt = DemonicTutor(INFURA_URL)
+        self.dt = DemonicTutor(NETWORKS["ETHEREUM"])
         self.loader = FileUtils()
 
     def test_dynamic_string_and_bytes(self):
