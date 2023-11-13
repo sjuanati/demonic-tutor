@@ -7,7 +7,6 @@ import unittest
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from dotenv import load_dotenv
 from constants import NETWORKS
 from utils.file import FileUtils
 from utils.context import Context

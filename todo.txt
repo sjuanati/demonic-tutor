@@ -1,8 +1,11 @@
 TODO:
 - measure start & end time for each extraction
 - multicall to get multiple balances based on list of addresses
-- support funcs: timestamp to block, contract call at given block,.. -> create menu
-- multichain
+- support funcs: contract call at given block
+- multichain (eth OK, polygon OK, )
+- data streams (write file while reading events)
+- check that arg names from function signature exist in decimals and filters!
+- tests for non-ethereumm networks
 
 
 Tests:
