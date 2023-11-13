@@ -1,6 +1,7 @@
 import os
 
 from web3 import Web3
+from web3.middleware import geth_poa_middleware
 from constants import NETWORKS
 from dotenv import load_dotenv
 from utils.context import Context
@@ -26,6 +27,8 @@ class DemonicTutor:
     def set_network(self, network: str):
         provider_url = os.getenv(f"PROVIDER_{network}")
         self.w3 = Web3(Web3.HTTPProvider(provider_url))
+        # To properly interpret the PoA-specific block structure: (e.g.: Polygon network)
+        self.w3.middleware_onion.inject(geth_poa_middleware, layer=0)
         self.network = network
         if not self.w3.is_connected():
             try:
