@@ -27,7 +27,7 @@ def main_menu():
         f"1) Convert Timestamp to Block Number\n"
         f"2) Convert Date to Block Number\n"
         f"3) Export Log Data into csv\n"
-        f"4) Perform Function Call (Not Implemented)\n"
+        f"4) Call Contract function\n"
         f"9) Exit\n"
     )
 
@@ -56,7 +56,7 @@ if __name__ == "__main__":
         elif choice == "3":
             dt.export_log_data()
         elif choice == "4":
-            pass
+            dt.get_contract_data()
         elif choice == "9":
             break
         if choice in ["1", "2", "3"]:

@@ -8,11 +8,13 @@ from utils.context import Context
 from utils.block import BlockUtils
 from utils.logger import setup_logger
 from exporters.event import EventExporter
+from callers.contract import ContractCaller
 from utils.exceptions import (
     FileUtilsError,
     BlockUtilsError,
     FilterEventError,
 )
+from web3.exceptions import ABIFunctionNotFound
 
 
 load_dotenv()
@@ -87,3 +89,16 @@ class DemonicTutor:
             """handled in utils.file"""
         except FilterEventError:
             """handled in filters.event"""
+
+    def get_contract_data(self, model: str = "", context: str = Context.MAIN.INPUT):
+        try:
+            # TODO: exceptions
+            if not model:
+                user_input = input("Enter the model for contract call (src/models): ")
+                model = user_input if user_input else "default_contract.json"
+            caller = ContractCaller(self.w3, model, context)
+            data = caller.get_function_data()
+            print(data)
+            input('wait')
+        except ABIFunctionNotFound:
+            """handled in callers.contract"""
