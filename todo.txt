@@ -1,22 +1,12 @@
 TODO:
 - measure start & end time for each extraction
 - multicall to get multiple balances based on list of addresses
-- support funcs: contract call at given block
-- multichain (eth OK, polygon OK, )
 - data streams (write file while reading events)
 - check that arg names from function signature exist in decimals and filters!
 - tests for non-ethereumm networks
-
-
-Tests:
-    - ev without indexed fields
-    - ev with all fields indexed
-    - ev with randomly indexed fields (not ordered)
-    - ev with struct or custom arrays
-    - ev without any data
-    - ev with dynamic types in data part (string or bytes) -> now fixed-length (32 bytes) arguments
-    - multiple ev with same name but diff parameters
-
+- tests for contract calls
+- readme
+- models.sample to explain each field
 
 
 DONE:
@@ -24,3 +14,5 @@ DONE:
 - dump extractions to csv
 - iterative/recursive extractions
 - menu to 1) Extract data 2) block # given a timestamp, etc
+- support funcs: contract call at given block, date to block num
+- multichain (only evm-based blockchains)
