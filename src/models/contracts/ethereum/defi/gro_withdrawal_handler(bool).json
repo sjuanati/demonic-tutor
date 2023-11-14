@@ -5,9 +5,10 @@
     "arguments": {
         "pwrd": true
     },
-    "types": {
+    "arg_types": {
         "pwrd": "bool"
     },
+    "output_decimals": {},
     "abi": [
         {
             "inputs": [

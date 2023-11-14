@@ -22,22 +22,28 @@ class ContractCaller:
 
     def get_function_data(self):
         try:
-            abi = self.config["abi"]
-            contract_addr = self.config["contract_addr"]
+            # Get model config
+            abi, contract_addr, block = self._get_contract()
+            func_name, func_args, arg_types = self._get_function()
+            output_decimals = self._get_outout()
+            
+            # Retrieve contract
             contract = self.w3.eth.contract(address=contract_addr, abi=abi)
-            function_name = self.config["function_name"]
-            parsed_args = self.parser.parse_args(
-                self.config["arguments"], self.config["types"]
+
+            # Parse function arguments
+            parsed_args = self.parser.parse_args(func_args, arg_types)
+            logger.info(f"Calling `{func_name}({', '.join(map(str, parsed_args))})`")
+
+            # Get data from function contract
+            result = contract.functions[func_name](*parsed_args).call(
+                block_identifier=block
             )
-            logger.info(
-                f"Calling `{function_name}({', '.join(map(str, parsed_args))})`"
-            )
-            result = contract.functions[function_name](*parsed_args).call(
-                block_identifier=self.config["block"]
-            )
-            return result
+
+            # Return parse result from contract call
+            return self.parser.parse_result(func_name, abi, result, output_decimals)
+
         except KeyError as e:
-            logger.error(f'get_function_data(): Error found on key {e}')
+            logger.error(f"get_function_data(): Error found on key {e}")
         except (ABIFunctionNotFound, Web3ValidationError) as e:
             logger.error(f"get_function_data(): {e}")
         except ValueError:
@@ -45,3 +51,20 @@ class ContractCaller:
         except Exception as e:
             logger.error(f"get_function_data(): {e}")
             raise e
+
+    def _get_contract(self):
+        return (
+            self.config["abi"],
+            self.config["contract_addr"],
+            self.config["block"],
+        )
+
+    def _get_function(self):
+        return (
+            self.config["function_name"],
+            self.config["arguments"],
+            self.config["arg_types"],
+        )
+
+    def _get_outout(self):
+        return self.config["output_decimals"]

@@ -1,131 +1,48 @@
 {
-    "contract_addr": "0x19A07afE97279cb6de1c9E73A13B7b0b63F7E67A",
+    "contract_addr": "0xF43c6bDD2F9158B5A78DCcf732D190C490e28644",
     "block": 18564560,
-    "function_name": "utilisationThreshold",
-    "arguments": {},
-    "types": {},
+    "function_name": "vestedBalance",
+    "arguments": {
+        "account": "0xd0ec53a6144dee637052bf94b443fd1d49f45076"
+    },
+    "arg_types": {
+        "account": "address"
+    },
+    "output_decimals": {
+        "vested": 18,
+        "available": 18
+    },
     "abi": [
         {
             "inputs": [
                 {
-                    "internalType": "address[]",
-                    "name": "_yieldTokens",
-                    "type": "address[]"
+                    "internalType": "uint256",
+                    "name": "startTime",
+                    "type": "uint256"
                 },
                 {
-                    "internalType": "address[2]",
-                    "name": "_trancheTokens",
-                    "type": "address[2]"
-                },
-                {
-                    "internalType": "contract IOracle",
-                    "name": "_oracle",
-                    "type": "address"
-                },
-                {
-                    "internalType": "contract GMigration",
-                    "name": "_gMigration",
-                    "type": "address"
+                    "internalType": "uint256",
+                    "name": "quota",
+                    "type": "uint256"
                 }
             ],
             "stateMutability": "nonpayable",
             "type": "constructor"
         },
         {
-            "inputs": [],
-            "name": "AlreadyMigrated",
-            "type": "error"
-        },
-        {
-            "inputs": [],
-            "name": "IndexTooHigh",
-            "type": "error"
-        },
-        {
-            "inputs": [],
-            "name": "MsgSenderNotTranche",
-            "type": "error"
-        },
-        {
-            "inputs": [],
-            "name": "NoAssets",
-            "type": "error"
-        },
-        {
-            "inputs": [],
-            "name": "NotEnoughBalance",
-            "type": "error"
-        },
-        {
-            "inputs": [],
-            "name": "UtilisationTooHigh",
-            "type": "error"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": false,
-                    "internalType": "uint256",
-                    "name": "JuniorTrancheBalance",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "uint256",
-                    "name": "SeniorTrancheBalance",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "uint256[]",
-                    "name": "YieldTokenBalances",
-                    "type": "uint256[]"
-                }
-            ],
-            "name": "LogMigration",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": false,
-                    "internalType": "address",
-                    "name": "newGTranche",
-                    "type": "address"
-                }
-            ],
-            "name": "LogMigrationFinished",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": false,
-                    "internalType": "address",
-                    "name": "newGTranche",
-                    "type": "address"
-                }
-            ],
-            "name": "LogMigrationPrepared",
-            "type": "event"
-        },
-        {
             "anonymous": false,
             "inputs": [
                 {
                     "indexed": true,
                     "internalType": "address",
-                    "name": "sender",
+                    "name": "contributor",
                     "type": "address"
                 },
                 {
                     "indexed": true,
-                    "internalType": "address",
-                    "name": "recipient",
-                    "type": "address"
+                    "internalType": "uint256",
+                    "name": "id",
+                    "type": "uint256"
                 },
                 {
                     "indexed": false,
@@ -136,74 +53,17 @@
                 {
                     "indexed": false,
                     "internalType": "uint256",
-                    "name": "index",
+                    "name": "withdrawn",
                     "type": "uint256"
-                },
-                {
-                    "indexed": true,
-                    "internalType": "bool",
-                    "name": "tranche",
-                    "type": "bool"
                 },
                 {
                     "indexed": false,
                     "internalType": "uint256",
-                    "name": "calcAmount",
+                    "name": "available",
                     "type": "uint256"
                 }
             ],
-            "name": "LogNewDeposit",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": false,
-                    "internalType": "int256",
-                    "name": "profit",
-                    "type": "int256"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "int256",
-                    "name": "loss",
-                    "type": "int256"
-                }
-            ],
-            "name": "LogNewPnL",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": false,
-                    "internalType": "uint256[2]",
-                    "name": "balances",
-                    "type": "uint256[2]"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "uint256",
-                    "name": "_utilisation",
-                    "type": "uint256"
-                }
-            ],
-            "name": "LogNewTrancheBalance",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": false,
-                    "internalType": "uint256",
-                    "name": "newThreshold",
-                    "type": "uint256"
-                }
-            ],
-            "name": "LogNewUtilisationThreshold",
+            "name": "LogClaimed",
             "type": "event"
         },
         {
@@ -212,13 +72,76 @@
                 {
                     "indexed": true,
                     "internalType": "address",
-                    "name": "sender",
+                    "name": "distributer",
+                    "type": "address"
+                }
+            ],
+            "name": "LogNewDistributer",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
+                    "internalType": "address",
+                    "name": "contributor",
                     "type": "address"
                 },
                 {
                     "indexed": true,
+                    "internalType": "uint256",
+                    "name": "id",
+                    "type": "uint256"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                }
+            ],
+            "name": "LogNewVest",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
                     "internalType": "address",
-                    "name": "recipient",
+                    "name": "contributor",
+                    "type": "address"
+                },
+                {
+                    "indexed": true,
+                    "internalType": "uint256",
+                    "name": "id",
+                    "type": "uint256"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "uint256",
+                    "name": "unlocked",
+                    "type": "uint256"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "uint256",
+                    "name": "available",
+                    "type": "uint256"
+                }
+            ],
+            "name": "LogStoppedVesting",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
+                    "internalType": "address",
+                    "name": "account",
                     "type": "address"
                 },
                 {
@@ -226,46 +149,9 @@
                     "internalType": "uint256",
                     "name": "amount",
                     "type": "uint256"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "uint256",
-                    "name": "index",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": true,
-                    "internalType": "bool",
-                    "name": "tranche",
-                    "type": "bool"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "uint256",
-                    "name": "yieldTokenAmounts",
-                    "type": "uint256"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "uint256",
-                    "name": "calcAmount",
-                    "type": "uint256"
                 }
             ],
-            "name": "LogNewWithdrawal",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
-                    "indexed": false,
-                    "internalType": "address",
-                    "name": "pnl",
-                    "type": "address"
-                }
-            ],
-            "name": "LogSetNewPnLLogic",
+            "name": "LogWithdrawal",
             "type": "event"
         },
         {
@@ -289,7 +175,7 @@
         },
         {
             "inputs": [],
-            "name": "NO_OF_TOKENS",
+            "name": "PERCENTAGE_DECIMAL_FACTOR",
             "outputs": [
                 {
                     "internalType": "uint256",
@@ -302,7 +188,20 @@
         },
         {
             "inputs": [],
-            "name": "NO_OF_TRANCHES",
+            "name": "QUOTA",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "VESTING_START_TIME",
             "outputs": [
                 {
                     "internalType": "uint256",
@@ -317,55 +216,53 @@
             "inputs": [
                 {
                     "internalType": "uint256",
-                    "name": "_amount",
+                    "name": "amount",
                     "type": "uint256"
                 },
                 {
                     "internalType": "uint256",
-                    "name": "_index",
-                    "type": "uint256"
-                },
-                {
-                    "internalType": "bool",
-                    "name": "_tranche",
-                    "type": "bool"
-                },
-                {
-                    "internalType": "address",
-                    "name": "_recipient",
-                    "type": "address"
-                }
-            ],
-            "name": "deposit",
-            "outputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "trancheAmount",
-                    "type": "uint256"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "calcAmount",
+                    "name": "id",
                     "type": "uint256"
                 }
             ],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [],
-            "name": "finalizeMigration",
+            "name": "claim",
             "outputs": [],
             "stateMutability": "nonpayable",
             "type": "function"
         },
         {
-            "inputs": [],
-            "name": "gTokenTotalAssets",
-            "outputs": [
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                },
                 {
                     "internalType": "uint256",
                     "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "name": "contributorPositions",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "total",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "withdrawn",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "startTime",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "stopTime",
                     "type": "uint256"
                 }
             ],
@@ -373,18 +270,12 @@
             "type": "function"
         },
         {
-            "inputs": [
-                {
-                    "internalType": "bool",
-                    "name": "_tranche",
-                    "type": "bool"
-                }
-            ],
-            "name": "getTrancheToken",
+            "inputs": [],
+            "name": "distributer",
             "outputs": [
                 {
-                    "internalType": "contract IGToken",
-                    "name": "trancheToken",
+                    "internalType": "contract IMintable",
+                    "name": "",
                     "type": "address"
                 }
             ],
@@ -392,77 +283,23 @@
             "type": "function"
         },
         {
-            "inputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "_index",
-                    "type": "uint256"
-                }
-            ],
-            "name": "getYieldToken",
-            "outputs": [
-                {
-                    "internalType": "contract ERC4626",
-                    "name": "yieldToken",
-                    "type": "address"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "_index",
-                    "type": "uint256"
-                }
-            ],
-            "name": "getYieldTokenDecimals",
+            "inputs": [],
+            "name": "globallyUnlocked",
             "outputs": [
                 {
                     "internalType": "uint256",
-                    "name": "decimals",
+                    "name": "unlocked",
                     "type": "uint256"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [],
-            "name": "getYieldTokenValues",
-            "outputs": [
+                },
                 {
-                    "internalType": "uint256[1]",
-                    "name": "values",
-                    "type": "uint256[1]"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [],
-            "name": "hasMigrated",
-            "outputs": [
+                    "internalType": "uint256",
+                    "name": "vesting",
+                    "type": "uint256"
+                },
                 {
-                    "internalType": "bool",
-                    "name": "",
-                    "type": "bool"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [],
-            "name": "hasMigratedFromOldTranche",
-            "outputs": [
-                {
-                    "internalType": "bool",
-                    "name": "",
-                    "type": "bool"
+                    "internalType": "uint256",
+                    "name": "available",
+                    "type": "uint256"
                 }
             ],
             "stateMutability": "view",
@@ -472,43 +309,16 @@
             "inputs": [
                 {
                     "internalType": "address",
-                    "name": "_oldGTranche",
+                    "name": "",
                     "type": "address"
                 }
             ],
-            "name": "migrate",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [],
-            "name": "migrateFromOldTranche",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [],
-            "name": "minDeposit",
+            "name": "numberOfContributorPositions",
             "outputs": [
                 {
                     "internalType": "uint256",
                     "name": "",
                     "type": "uint256"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [],
-            "name": "oracle",
-            "outputs": [
-                {
-                    "internalType": "contract IOracle",
-                    "name": "",
-                    "type": "address"
                 }
             ],
             "stateMutability": "view",
@@ -528,36 +338,24 @@
             "type": "function"
         },
         {
-            "inputs": [],
-            "name": "pnl",
-            "outputs": [
+            "inputs": [
                 {
-                    "internalType": "contract IPnL",
-                    "name": "",
+                    "internalType": "address",
+                    "name": "account",
                     "type": "address"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "id",
+                    "type": "uint256"
                 }
             ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [],
-            "name": "pnlDistribution",
+            "name": "positionBalance",
             "outputs": [
                 {
-                    "internalType": "uint256[2]",
-                    "name": "newTrancheBalances",
-                    "type": "uint256[2]"
-                },
-                {
-                    "internalType": "int256",
-                    "name": "profit",
-                    "type": "int256"
-                },
-                {
-                    "internalType": "int256",
-                    "name": "loss",
-                    "type": "int256"
+                    "internalType": "uint256",
+                    "name": "balance",
+                    "type": "uint256"
                 }
             ],
             "stateMutability": "view",
@@ -567,13 +365,29 @@
             "inputs": [
                 {
                     "internalType": "address",
-                    "name": "_newGTranche",
+                    "name": "account",
                     "type": "address"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "id",
+                    "type": "uint256"
                 }
             ],
-            "name": "prepareMigration",
-            "outputs": [],
-            "stateMutability": "nonpayable",
+            "name": "positionVestedBalance",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "vested",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "available",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
             "type": "function"
         },
         {
@@ -586,12 +400,12 @@
         {
             "inputs": [
                 {
-                    "internalType": "contract IPnL",
-                    "name": "_pnl",
+                    "internalType": "address",
+                    "name": "_distributer",
                     "type": "address"
                 }
             ],
-            "name": "setPnL",
+            "name": "setDistributer",
             "outputs": [],
             "stateMutability": "nonpayable",
             "type": "function"
@@ -599,12 +413,17 @@
         {
             "inputs": [
                 {
+                    "internalType": "address",
+                    "name": "contributor",
+                    "type": "address"
+                },
+                {
                     "internalType": "uint256",
-                    "name": "_newThreshold",
+                    "name": "id",
                     "type": "uint256"
                 }
             ],
-            "name": "setUtilisationThreshold",
+            "name": "stopVesting",
             "outputs": [],
             "stateMutability": "nonpayable",
             "type": "function"
@@ -612,35 +431,16 @@
         {
             "inputs": [
                 {
-                    "internalType": "uint256",
-                    "name": "",
-                    "type": "uint256"
+                    "internalType": "address",
+                    "name": "account",
+                    "type": "address"
                 }
             ],
-            "name": "tokenBalances",
+            "name": "totalBalance",
             "outputs": [
                 {
                     "internalType": "uint256",
-                    "name": "",
-                    "type": "uint256"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "bool",
-                    "name": "",
-                    "type": "bool"
-                }
-            ],
-            "name": "trancheBalances",
-            "outputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "",
+                    "name": "balance",
                     "type": "uint256"
                 }
             ],
@@ -661,12 +461,46 @@
             "type": "function"
         },
         {
-            "inputs": [],
-            "name": "utilisation",
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "account",
+                    "type": "address"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "startTime",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                }
+            ],
+            "name": "vest",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "account",
+                    "type": "address"
+                }
+            ],
+            "name": "vestedBalance",
             "outputs": [
                 {
                     "internalType": "uint256",
-                    "name": "",
+                    "name": "vested",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "available",
                     "type": "uint256"
                 }
             ],
@@ -675,7 +509,7 @@
         },
         {
             "inputs": [],
-            "name": "utilisationThreshold",
+            "name": "vestingAssets",
             "outputs": [
                 {
                     "internalType": "uint256",
@@ -690,38 +524,12 @@
             "inputs": [
                 {
                     "internalType": "uint256",
-                    "name": "_amount",
+                    "name": "amount",
                     "type": "uint256"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "_index",
-                    "type": "uint256"
-                },
-                {
-                    "internalType": "bool",
-                    "name": "_tranche",
-                    "type": "bool"
-                },
-                {
-                    "internalType": "address",
-                    "name": "_recipient",
-                    "type": "address"
                 }
             ],
             "name": "withdraw",
-            "outputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "yieldTokenAmounts",
-                    "type": "uint256"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "calcAmount",
-                    "type": "uint256"
-                }
-            ],
+            "outputs": [],
             "stateMutability": "nonpayable",
             "type": "function"
         }

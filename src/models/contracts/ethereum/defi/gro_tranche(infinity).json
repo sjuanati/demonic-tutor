@@ -3,7 +3,8 @@
     "block": 18564560,
     "function_name": "utilisationThreshold",
     "arguments": {},
-    "types": {},
+    "arg_types": {},
+    "output_decimals": {},
     "abi": [
         {
             "inputs": [

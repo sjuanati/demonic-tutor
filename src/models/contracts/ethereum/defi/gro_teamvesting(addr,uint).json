@@ -6,10 +6,11 @@
         "account": "0xd0ec53a6144dee637052bf94b443fd1d49f45076",
         "id": 1
     },
-    "types": {
+    "arg_types": {
         "account": "address",
         "id": "uint256"
     },
+    "output_decimals": {},
     "abi": [
         {
             "inputs": [
