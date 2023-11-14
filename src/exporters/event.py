@@ -88,6 +88,8 @@ class EventExporter:
 
             return json.dumps(events, indent=4)
 
+        except KeyError as e:
+            logger.error(f'extract_data(): Error found on key {e}')
         except FilterEventError:
             """handled in function build_filter_params()"""
         except ParserEventError:

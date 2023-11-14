@@ -51,6 +51,10 @@ def build_filter_params(
 
         return filter_params
 
+
+    except KeyError as e:
+        logger.error(f'build_filter_params(): Error found on key {e}')
+        raise FilterEventError()
     except Exception as e:
         logger.error(f"build_filter_params(): {e}")
         raise FilterEventError()

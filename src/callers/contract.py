@@ -21,28 +21,27 @@ class ContractCaller:
         self.parser = ContractCallArgsParser(self.w3, context)
 
     def get_function_data(self):
-        # TODO: build a list with (arg_names, arg_types), similarly to event lists
         try:
             abi = self.config["abi"]
             contract_addr = self.config["contract_addr"]
             contract = self.w3.eth.contract(address=contract_addr, abi=abi)
             function_name = self.config["function_name"]
-            args = self.config["arguments"]
-            types = self.config["types"]
-            block_number = self.config["block"]
-            contract = self.w3.eth.contract(address=contract_addr, abi=abi)
-            parsed_args = self.parser.parse_args(args, types)
+            parsed_args = self.parser.parse_args(
+                self.config["arguments"], self.config["types"]
+            )
             logger.info(
                 f"Calling `{function_name}({', '.join(map(str, parsed_args))})`"
             )
             result = contract.functions[function_name](*parsed_args).call(
-                block_identifier=block_number
+                block_identifier=self.config["block"]
             )
             return result
+        except KeyError as e:
+            logger.error(f'get_function_data(): Error found on key {e}')
         except (ABIFunctionNotFound, Web3ValidationError) as e:
-            print(f"get_function_data(): {e}")
+            logger.error(f"get_function_data(): {e}")
         except ValueError:
             """handled in parsers.contract_call_args_parser"""
         except Exception as e:
-            # TODO
+            logger.error(f"get_function_data(): {e}")
             raise e

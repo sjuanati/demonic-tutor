@@ -1,15 +1,15 @@
 {
-    "contract_addr": "6b175474e89094c44da98b954eedeac495271d0f.factory.bridge.near",
-    "start_block": 105623887,
-    "end_block": 105623888,
-    "function_sig": "Transfer (index_topic_1 address from, index_topic_2 address to, uint256 value)",
+    "contract_addr": "0x6b175474e89094c44da98b954eedeac495271d0f",
+    "start_block": 18473342,
+    "end_block": 18473542,
+    "function_sig": "Transfer (index_topic_1 address src, index_topic_2 address dst, uint256 wad)",
     "filters": {
-        "from": null,
-        "to": null
+        "src": null,
+        "dst": null
     },
     "decimals": {
-        "from": null,
-        "to": null,
-        "value": 18
+        "src": null,
+        "dst": null,
+        "wad": 18
     }
 }

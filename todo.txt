@@ -2,7 +2,7 @@ TODO:
 - measure start & end time for each extraction
 - multicall to get multiple balances based on list of addresses
 - data streams (write file while reading events)
-- check that arg names from function signature exist in decimals and filters!
+- check that arg names from function signature = filters args!
 - tests for non-ethereumm networks
 - tests for contract calls
 - readme
