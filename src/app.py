@@ -59,5 +59,5 @@ if __name__ == "__main__":
             dt.get_contract_data()
         elif choice == "9":
             break
-        if choice in ["1", "2", "3"]:
+        if choice in ["1", "2", "3", "4"]:
             input("Press Enter to continue...")

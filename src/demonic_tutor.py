@@ -100,5 +100,7 @@ class DemonicTutor:
             data = caller.get_function_data()
             print(data)
             input('wait')
+        except FileUtilsError:
+            """handled in utils.file"""
         except ABIFunctionNotFound:
             """handled in callers.contract"""
