@@ -56,7 +56,7 @@ if __name__ == "__main__":
         elif choice == "3":
             dt.export_log_data()
         elif choice == "4":
-            dt.get_contract_data()
+            dt.export_call_data()
         elif choice == "9":
             break
         if choice in ["1", "2", "3", "4"]:

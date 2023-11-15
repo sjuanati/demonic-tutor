@@ -19,7 +19,7 @@ class FileUtils:
             with open(full_path, "r") as f:
                 return json.load(f)
         except Exception as e:
-            logger.error(e)
+            logger.error(f"read_file(): {e}")
             raise FileUtilsError()
 
     @staticmethod

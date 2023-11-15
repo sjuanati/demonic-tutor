@@ -1,20 +1,22 @@
 import os
+import json
 
 from web3 import Web3
 from web3.middleware import geth_poa_middleware
-from constants import NETWORKS
 from dotenv import load_dotenv
 from utils.context import Context
 from utils.block import BlockUtils
 from utils.logger import setup_logger
 from exporters.event import EventExporter
-from callers.contract import ContractCaller
+from exporters.call import CallExporter
+from web3.exceptions import ABIFunctionNotFound
+from constants import NETWORKS, DEFAULT_CALL_FILE, DEFAULT_EVENT_FILE
 from utils.exceptions import (
     FileUtilsError,
     BlockUtilsError,
     FilterEventError,
 )
-from web3.exceptions import ABIFunctionNotFound
+
 
 
 load_dotenv()
@@ -80,7 +82,7 @@ class DemonicTutor:
         try:
             if not model:
                 user_input = input("Enter the model for log extraction (src/models): ")
-                model = user_input if user_input else "default_event.json"
+                model = user_input if user_input else DEFAULT_EVENT_FILE
             ev_exporter = EventExporter(self.w3, model, context)
             events = ev_exporter.extract_data()
             # print(events) # to add new tests
@@ -90,15 +92,19 @@ class DemonicTutor:
         except FilterEventError:
             """handled in filters.event"""
 
-    def get_contract_data(self, model: str = "", context: str = Context.MAIN.INPUT):
+    def export_call_data(self, model: str = "", context: str = Context.MAIN.INPUT):
         try:
             # TODO: exceptions
             if not model:
                 user_input = input("Enter the model for contract call (src/models): ")
-                model = user_input if user_input else "default_contract.json"
-            caller = ContractCaller(self.w3, model, context)
-            data = caller.get_function_data()
-            print(data)
+                model = user_input if user_input else DEFAULT_CALL_FILE
+            call_exporter = CallExporter(self.w3, model, context)
+            data = call_exporter.extract_data()
+            data_json = json.dumps(data, indent=4)
+            if context == Context.MAIN.INPUT:
+                print(data_json)
+            return data_json
+
         except FileUtilsError:
             """handled in utils.file"""
         except ABIFunctionNotFound:

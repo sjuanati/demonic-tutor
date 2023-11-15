@@ -3,7 +3,7 @@ From the main menu, if option `4) Call Contract function` is chosen and no model
 the model to be executed will be that in /src/models/default_contract.json.
 """
 
-default_contract = {
+default_call = {
     "contract_addr": (
         "Address of the EVM contract to retrieve data from. "
         "E.g.: 0xF43c6bDD2F9158B5A78DCcf732D190C490e28644"

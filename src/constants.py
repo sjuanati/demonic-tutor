@@ -11,3 +11,5 @@ NETWORKS = {
     "OPTIMISM": "OPTIMISM",
     "POLYGON": "POLYGON",
 }
+DEFAULT_EVENT_FILE = 'default_event.json'
+DEFAULT_CALL_FILE = 'default_call.json'

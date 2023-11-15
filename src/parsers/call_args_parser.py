@@ -4,7 +4,7 @@ from utils.address import AddressUtils
 logger = setup_logger(__name__)
 
 
-class ContractCallArgsParser:
+class CallArgsParser:
     def __init__(self, w3_instance, context):
         self.w3 = w3_instance
         self.addr_utils = AddressUtils(self.w3)
@@ -35,7 +35,15 @@ class ContractCallArgsParser:
             # Check if there are output variable names
             if function_abi and "outputs" in function_abi:
                 output_names = [
-                    output["name"] for output in function_abi["outputs"] if "name" in output
+                    output["name"]
+                    for output in function_abi["outputs"]
+                    if "name" in output
+                ]
+
+                # give names to output variables (when they are not functions)
+                output_names = [
+                    f"output_{i+1}" if item == "" else item
+                    for i, item in enumerate(output_names)
                 ]
 
                 # if output_decimals is fulfilled in the Model
@@ -46,7 +54,6 @@ class ContractCallArgsParser:
                     # If there are decimal values (>0), apply 10**N conversion
                     for i in range(len(output_decimals)):
                         dec_value = list(output_decimals.values())[i]
-
                         if dec_value and dec_value > 0:
                             result[i] = result[i] / 10**dec_value
 

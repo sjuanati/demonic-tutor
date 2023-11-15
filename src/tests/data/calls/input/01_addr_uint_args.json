@@ -1,16 +1,17 @@
 {
     "contract_addr": "0xF43c6bDD2F9158B5A78DCcf732D190C490e28644",
     "block": 18564560,
-    "function_name": "vestedBalance",
+    "function_name": "positionBalance",
     "arguments": {
-        "account": "0xd0ec53a6144dee637052bf94b443fd1d49f45076"
+        "account": "0xd0ec53a6144dee637052bf94b443fd1d49f45076",
+        "id": 0
     },
     "arg_types": {
-        "account": "address"
+        "account": "address",
+        "id": "uint256"
     },
     "output_decimals": {
-        "vested": 18,
-        "available": 18
+        "balance": 18
     },
     "abi": [
         {

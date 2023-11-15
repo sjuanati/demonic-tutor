@@ -1,12 +1,12 @@
 from utils.file import FileUtils
 from utils.context import Context
 from utils.logger import setup_logger
-from parsers.contract_call_args_parser import ContractCallArgsParser
+from parsers.call_args_parser import CallArgsParser
 
 logger = setup_logger(__name__)
 
 
-class ContractCaller:
+class CallExporter:
     def __init__(
         self,
         w3_instance,
@@ -17,9 +17,9 @@ class ContractCaller:
         self.w3 = w3_instance
         self.context = context
         self.config = FileUtils.read_file(model, context)
-        self.parser = ContractCallArgsParser(self.w3, context)
+        self.parser = CallArgsParser(self.w3, context)
 
-    def get_function_data(self):
+    def extract_data(self):
         try:
             # Get model config
             abi, contract_addr, block = self._get_contract()
@@ -31,7 +31,8 @@ class ContractCaller:
 
             # Parse function arguments
             parsed_args = self.parser.parse_args(func_args, arg_types)
-            logger.info(f"Calling `{func_name}({', '.join(map(str, parsed_args))})`")
+            if self.context == Context.MAIN.INPUT:
+                logger.info(f"Calling `{func_name}({', '.join(map(str, parsed_args))})`")
 
             # Get data from function contract
             result = contract.functions[func_name](*parsed_args).call(
@@ -42,9 +43,9 @@ class ContractCaller:
             return self.parser.parse_result(func_name, abi, result, output_decimals)
 
         except KeyError as e:
-            logger.error(f"get_function_data(): Error found on key {e}")
+            logger.error(f"extract_data(): Error found on key {e}")
         except Exception as e:
-            logger.error(f"get_function_data(): {e}")
+            logger.error(f"extract_data(): {e}")
             raise e
 
     def _get_contract(self):

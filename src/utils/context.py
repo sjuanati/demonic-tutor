@@ -15,6 +15,6 @@ Context.MAIN = Context._Context(input_folder="models", output_folder="data")
 Context.TEST_EVENT = Context._Context(
     input_folder="tests/data/events/input", output_folder="tests/data/events/output"
 )
-Context.TEST_CONTRACT = Context._Context(
-    input_folder="tests/data/events/input", output_folder="tests/data/events/output"
+Context.TEST_CALL = Context._Context(
+    input_folder="tests/data/calls/input", output_folder="tests/data/calls/output"
 )
