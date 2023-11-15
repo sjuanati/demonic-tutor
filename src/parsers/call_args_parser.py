@@ -55,7 +55,14 @@ class CallArgsParser:
                     for i in range(len(output_decimals)):
                         dec_value = list(output_decimals.values())[i]
                         if dec_value and dec_value > 0:
-                            result[i] = result[i] / 10**dec_value
+                            # handle arrays, applying the same decimal conversion to all elems
+                            if isinstance(result[i], list):
+                                result[i] = [
+                                    item / 10**dec_value for item in result[i]
+                                ]
+                            # handle single values
+                            else:
+                                result[i] = result[i] / 10**dec_value
 
                 # Map the result tuple to a dictionary using the output names
                 return dict(zip(output_names, result))

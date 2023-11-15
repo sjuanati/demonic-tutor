@@ -7,7 +7,7 @@
     "output_decimals": {
         "newTrancheBalances": 18,
         "profit": 18,
-        "loss": 0
+        "loss": 18
     },
     "abi": [
         {
