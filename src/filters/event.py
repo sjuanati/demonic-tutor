@@ -25,16 +25,21 @@ def build_filter_params(
         for arg_type, arg_name, indexed in parsed_args:
             if indexed:
                 filter_value = config["filters"].get(arg_name)
-                # TODO: include bytes
                 if filter_value is not None:
+                    # Address type
                     if arg_type == "address":
                         filter_value = addr_utils.addr_to_hex(filter_value)
-                    # TODO: test filtering by integer
-                    elif arg_type.startswith("uint") or arg_type.startswith("int"):
-                        filter_value = hex(filter_value)
-                    elif isinstance(filter_value, bool):
+                    # Integer or Boolean types
+                    elif (
+                        arg_type.startswith("uint")
+                        or arg_type.startswith("int")
+                        or isinstance(filter_value, bool)
+                    ):
                         filter_value = "0x{:064x}".format(int(filter_value))
-                    # TODO: Add more type conversions if necessary
+                    # Bytes or String types
+                    elif arg_type.startswith("bytes") or arg_type == "string":
+                        if not filter_value.startswith("0x"):
+                            filter_value = "0x" + filter_value
                     topics.append(filter_value)
                 else:
                     topics.append(None)
@@ -51,9 +56,8 @@ def build_filter_params(
 
         return filter_params
 
-
     except KeyError as e:
-        logger.error(f'build_filter_params(): Error found on key {e}')
+        logger.error(f"build_filter_params(): Error found on key {e}")
         raise FilterEventError()
     except Exception as e:
         logger.error(f"build_filter_params(): {e}")
