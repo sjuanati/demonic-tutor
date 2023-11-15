@@ -2,19 +2,20 @@ import time
 import calendar
 
 from datetime import datetime
+from constants import GENESIS_TS
 from utils.logger import setup_logger
-from constants import ETH_GENESIS_BLOCK
 from utils.exceptions import BlockUtilsError
 
 logger = setup_logger(__name__)
 
 
 class BlockUtils:
-    TS_ERROR_MSG = "Wrong ts: {} (for reference, current ts = {})"
+    TS_ERROR_MSG = "Wrong ts: {} (for reference, current ts = {}, genesis ts = {})"
     RANGE_ERROR_MSG = "Ts {} out of blockchain data range {} to {}"
 
-    def __init__(self, w3_instance):
+    def __init__(self, w3_instance, network):
         self.w3 = w3_instance
+        self.network = network
 
     @staticmethod
     def convert_date_to_ts(date: str):
@@ -25,17 +26,18 @@ class BlockUtils:
             logger.error(e)
             raise BlockUtilsError()
 
-    @staticmethod
-    # TODO: depends on network
-    def validate_timestamp(timestamp: int):
-        """Validate if the provided timestamp format is correct."""
-        current_time = int(time.time())
+    def validate_timestamp(self, timestamp: int):
+        """Validate if the provided timestamp format is correct and within a valid range."""
+        current_ts = int(time.time())
+        genesis_ts = GENESIS_TS[self.network]
         if (
             not isinstance(timestamp, int)
-            or timestamp < ETH_GENESIS_BLOCK
-            or timestamp > current_time
+            or timestamp < genesis_ts
+            or timestamp > current_ts
         ):
-            logger.error(BlockUtils.TS_ERROR_MSG.format(timestamp, current_time))
+            logger.error(
+                BlockUtils.TS_ERROR_MSG.format(timestamp, current_ts, genesis_ts)
+            )
             raise BlockUtilsError()
 
     def validate_range(self, timestamp: int):

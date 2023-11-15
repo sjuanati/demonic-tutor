@@ -18,7 +18,6 @@ from utils.exceptions import (
 )
 
 
-
 load_dotenv()
 logger = setup_logger(__name__)
 
@@ -61,7 +60,9 @@ class DemonicTutor:
     def get_block_number_by_timestamp(self):
         try:
             timestamp = int(input("Enter a unix timestamp: "))
-            block = BlockUtils(self.w3).get_closest_block_number_by_timestamp(timestamp)
+            block = BlockUtils(
+                self.w3, self.network
+            ).get_closest_block_number_by_timestamp(timestamp)
             print(f"block: {block}")
         except ValueError as e:
             logger.error(e)
@@ -72,7 +73,9 @@ class DemonicTutor:
         # eg: 20221010 10:10:10
         try:
             date_input = input("Enter the date in format 'YYYYMMDD HH:MM:SS': ")
-            block = BlockUtils(self.w3).get_closest_block_number_by_date(date_input)
+            block = BlockUtils(self.w3, self.network).get_closest_block_number_by_date(
+                date_input
+            )
             print(f"eth block: {block}")
         except BlockUtilsError:
             """handled in class utils.block"""
