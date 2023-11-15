@@ -23,32 +23,41 @@ class ContractCallArgsParser:
 
     def parse_result(self, func_name, abi, result, output_decimals):
         """tbc"""
-        # Extract output parameter names from ABI
-        function_abi = next(filter(lambda f: f.get("name") == func_name, abi), None)
+        try:
+            # Ensure result is in list format, as it returns a list if 2+ output values
+            # or a single value if only 1 output value
+            if not isinstance(result, list):
+                result = [result]
 
-        # Check if there are output variable names
-        if function_abi and "outputs" in function_abi:
-            output_names = [
-                output["name"] for output in function_abi["outputs"] if "name" in output
-            ]
+            # Extract output parameter names from ABI
+            function_abi = next(filter(lambda f: f.get("name") == func_name, abi), None)
 
-            # if output_decimals is fulfilled in the Model
-            if output_decimals:
-                # Check if output_decimal elements are aligned with expected ABI output
-                self._check_outputs(output_names, output_decimals)
+            # Check if there are output variable names
+            if function_abi and "outputs" in function_abi:
+                output_names = [
+                    output["name"] for output in function_abi["outputs"] if "name" in output
+                ]
 
-                # If there are decimal values (>0), apply 10**N conversion
-                for i in range(len(output_decimals)):
-                    dec_value = list(output_decimals.values())[i]
-                    if dec_value and dec_value > 0:
-                        result[i] = result[i] / 10**dec_value
+                # if output_decimals is fulfilled in the Model
+                if output_decimals:
+                    # Check if output_decimal elements are aligned with expected ABI output
+                    self._check_outputs(output_names, output_decimals)
 
-            # Map the result tuple to a dictionary using the output names
-            return dict(zip(output_names, result))
-        else:
-            # Show result without output names
-            logger.warning(f"No ABI entry found for func {func_name}")
-            return {f"output_{i}": val for i, val in enumerate(result)}
+                    # If there are decimal values (>0), apply 10**N conversion
+                    for i in range(len(output_decimals)):
+                        dec_value = list(output_decimals.values())[i]
+
+                        if dec_value and dec_value > 0:
+                            result[i] = result[i] / 10**dec_value
+
+                # Map the result tuple to a dictionary using the output names
+                return dict(zip(output_names, result))
+            else:
+                # Show result without output names
+                logger.warning(f"No ABI entry found for func {func_name}")
+                return {f"output_{i}": val for i, val in enumerate(result)}
+        except Exception as e:
+            self._raise_exception("parse_result", e)
 
     def _parse_argument(self, arg: str, type: str):
         """tbc"""
@@ -71,7 +80,7 @@ class ContractCallArgsParser:
         """tbd"""
         if len(args) != len(types):
             error_msg = f"Num. of arguments != Num. of types in model"
-            self._raise_exception("parse_args", error_msg)
+            self._raise_exception("_check_args", error_msg)
 
     def _check_outputs(self, output_names, output_decimals):
         """tbd"""
