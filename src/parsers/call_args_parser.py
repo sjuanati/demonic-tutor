@@ -1,5 +1,6 @@
 from utils.logger import setup_logger
 from utils.address import AddressUtils
+from utils.exceptions import ParserCallError
 
 logger = setup_logger(__name__)
 
@@ -71,7 +72,8 @@ class CallArgsParser:
                 logger.warning(f"No ABI entry found for func {func_name}")
                 return {f"output_{i}": val for i, val in enumerate(result)}
         except Exception as e:
-            self._raise_exception("parse_result", e)
+            logger.error(f"parse_result(): {e}")
+            raise ParserCallError(e)
 
     def _parse_argument(self, arg: str, type: str):
         """tbc"""

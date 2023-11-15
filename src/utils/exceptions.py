@@ -5,7 +5,10 @@ class FilterEventError(Exception):
     """Exceptions in filters.event"""
 
 class ParserEventError(Exception):
-    """Exceptions in parsers.event"""
+    """Exceptions in parsers.event*"""
+
+class ParserCallError(Exception):
+    """Exceptions in parsers.call*"""
 
 class BlockUtilsError(Exception):
     """Exceptions in utils.block"""

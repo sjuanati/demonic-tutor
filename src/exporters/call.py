@@ -1,6 +1,7 @@
 from utils.file import FileUtils
 from utils.context import Context
 from utils.logger import setup_logger
+from utils.exceptions import ParserCallError
 from parsers.call_args_parser import CallArgsParser
 
 logger = setup_logger(__name__)
@@ -44,6 +45,8 @@ class CallExporter:
 
         except KeyError as e:
             logger.error(f"extract_data(): Error found on key {e}")
+        except ParserCallError:
+            """handled in parsers.call_args_parser"""
         except Exception as e:
             logger.error(f"extract_data(): {e}")
             raise e
