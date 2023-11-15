@@ -1,0 +1,12 @@
+[
+    {
+        "txn_hash": "0x43a516f2389e9270fb74156fbc9365ed707789cecbc846f9e974dc412db3c32b",
+        "block_num": 37808200,
+        "asset": "0x6d80113e533a2c0fe82eabd35f1875dcea89ea97",
+        "reward": "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
+        "user": "0x5a712ef5cf210b97ea20e54849409cb527d5f968",
+        "assetIndex": 28775719358798436,
+        "userIndex": 28775719358798436,
+        "rewardsAccrued": 10977955842328150
+    }
+]

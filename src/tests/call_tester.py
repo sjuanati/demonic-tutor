@@ -13,7 +13,7 @@ from utils.context import Context
 from demonic_tutor import DemonicTutor
 
 
-class ContractTester(unittest.TestCase):
+class CallTester(unittest.TestCase):
     def setUp(self):
         self.dt = DemonicTutor(NETWORKS["ETHEREUM"])
         self.loader = FileUtils()

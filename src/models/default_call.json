@@ -1,13 +1,11 @@
 {
     "contract_addr": "0x19A07afE97279cb6de1c9E73A13B7b0b63F7E67A",
     "block": 18564560,
-    "function_name": "pnlDistribution",
+    "function_name": "getYieldTokenValues",
     "arguments": {},
     "arg_types": {},
     "output_decimals": {
-        "newTrancheBalances": 18,
-        "profit": 18,
-        "loss": 0
+        "values": 18
     },
     "abi": [
         {

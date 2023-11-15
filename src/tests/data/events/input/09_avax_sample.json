@@ -1,0 +1,12 @@
+{
+    "contract_addr": "0x929ec64c34a17401f460460d4b9390518e5b473e",
+    "start_block": 37808200,
+    "end_block": 37808200,
+    "function_sig": "Accrued (index_topic_1 address asset, index_topic_2 address reward, index_topic_3 address user, uint256 assetIndex, uint256 userIndex, uint256 rewardsAccrued)",
+    "filters": {
+        "asset": null,
+        "reward": null,
+        "user": null
+    },
+    "decimals": {}
+}
