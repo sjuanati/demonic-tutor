@@ -12,6 +12,9 @@ class Context:
 
 # Create class variables and assign their metadata
 Context.MAIN = Context._Context(input_folder="models", output_folder="data")
-Context.TEST = Context._Context(
-    input_folder="tests/data/input", output_folder="tests/data/output"
+Context.TEST_EVENT = Context._Context(
+    input_folder="tests/data/events/input", output_folder="tests/data/events/output"
+)
+Context.TEST_CONTRACT = Context._Context(
+    input_folder="tests/data/events/input", output_folder="tests/data/events/output"
 )
