@@ -8,132 +8,72 @@ logger = setup_logger(__name__)
 
 
 class CallArgsParser:
-    def __init__(self, w3_instance, context):
+    def __init__(self, w3_instance):
         self.w3 = w3_instance
         self.addr_utils = AddressUtils(self.w3)
-        self.context = context
 
-    def parse_args(self, args, types):
-        """tbc"""
-        self._check_args(args, types)
-
-        parsed_args = []
-        for i in range(len(args)):
-            parsed_args.append(
-                self._parse_argument(list(args.values())[i], list(types.values())[i])
-            )
+    def parse_args(self, args, arg_types):
+        """
+        Parses and validates a list of arguments based on their expected types.
+        """
+        self._check_args(args, arg_types)
+        arg_values = list(args.values())
+        arg_types_list = list(arg_types.values())
+        parsed_args = [
+            self._parse_argument(arg_values[i], arg_types_list[i])
+            for i in range(len(arg_values))
+        ]
         return parsed_args
 
-    def parse_result(self, func_name, abi, result, output_decimals):
-        """tbc"""
-        try:
-            # Ensure result is in list format, as it returns a list if 2+ output values
-            # or a single value if only 1 output value
-            if not isinstance(result, list):
-                result = [result]
-
-            # Extract output parameter names from ABI
-            function_abi = next(filter(lambda f: f.get("name") == func_name, abi), None)
-
-            # Check if there are output variable names
-            if function_abi and "outputs" in function_abi:
-                output_names = [
-                    output["name"]
-                    for output in function_abi["outputs"]
-                    if "name" in output
-                ]
-
-                # give names to output variables (when they are not functions)
-                output_names = [
-                    f"output_{i+1}" if item == "" else item
-                    for i, item in enumerate(output_names)
-                ]
-
-                # if output_decimals is fulfilled in the Model
-                if output_decimals:
-                    # Check if output_decimal elements are aligned with expected ABI output
-                    self._check_outputs(output_names, output_decimals)
-
-                    # If there are decimal values (>0), apply 10**N conversion
-                    for i in range(len(output_decimals)):
-                        dec_value = list(output_decimals.values())[i]
-                        if dec_value and dec_value > 0:
-                            # handle arrays, applying the same decimal conversion to all elems
-                            if isinstance(result[i], list):
-                                result[i] = [
-                                    item / 10**dec_value for item in result[i]
-                                ]
-                            # handle single values
-                            else:
-                                result[i] = result[i] / 10**dec_value
-
-                # Map the result tuple to a dictionary using the output names
-                return dict(zip(output_names, result))
-            else:
-                # Show result without output names
-                logger.warning(f"No ABI entry found for func {func_name}")
-                return {f"output_{i}": val for i, val in enumerate(result)}
-        except Exception as e:
-            logger.error(f"parse_result(): {e}")
-            raise ParserCallError(e)
-
-    def _parse_argument(self, arg: str, type: str):
-        """tbc"""
+    def _parse_argument(self, arg: str, arg_type: str):
+        """
+        Processes and converts a single argument to its correct Ethereum
+        arg_type representation.
+        """
         # Bool type
-        if type == "bool":
+        if arg_type == "bool":
             if isinstance(arg, bool):
                 return arg
             else:
                 error_msg = f"arg: {arg} is not a boolean type (True or False)"
                 self._raise_exception("_parse_argument", error_msg)
-        elif type.startswith("uint") or type.startswith("int"):
+        elif arg_type.startswith("uint") or arg_type.startswith("int"):
             return arg
         # Address type
-        elif type == "address":
+        elif arg_type == "address":
             return self.addr_utils.addr_checksum(arg)
         # Bytes or String types
-        elif type.startswith("bytes") or type == "string":
+        elif arg_type.startswith("bytes") or arg_type == "string":
             if not arg.startswith("0x"):
                 arg = "0x" + arg
             self._is_valid_bytes32(arg)
             return arg
         # Type not found
         else:
-            error_msg = f"No matching type: {type}"
+            error_msg = f"No matching type: {arg_type}"
             self._raise_exception("_parse_argument", error_msg)
 
-    def _check_args(self, args, types):
-        """tbd"""
-        if len(args) != len(types):
+    def _check_args(self, args, arg_types):
+        """
+        Ensures the arguments list and types list are of equal length.
+        """
+        if len(args) != len(arg_types):
             error_msg = f"Num. of arguments != Num. of types in model"
             self._raise_exception("_check_args", error_msg)
 
-    def _check_outputs(self, output_names, output_decimals):
-        """tbd"""
-        # Formatting the args for printing
-        f_output_names = (
-            f'ABI output names: ({", ".join(name for name in output_names)})'
-        )
-        f_output_decimals = f'Model output decimal names: ({", ".join(name for name in output_decimals)})'
-
-        # Check if both args have the same number of records
-        if len(output_names) != len(output_decimals):
-            error_msg = f"Num. of {f_output_names} != Num. of {f_output_decimals}"
-            self._raise_exception("_check_outputs", error_msg)
-
-        # Check if both args have the same names
-        if not all(name in output_decimals for name in output_names):
-            error_msg = f"Names for {f_output_names} != Names for {f_output_decimals}"
-            self._raise_exception("_check_outputs", error_msg)
-
     def _is_valid_bytes32(self, value):
-        pattern = re.compile(r"^0x[a-fA-F0-9]{64}$")
-        if not pattern.match(value):
+        """
+        Validates a string to check if it's a properly formatted bytes32 hexadecimal.
+        """
+        if not re.match(r"^0x[a-fA-F0-9]{64}$", value):
             error_msg = f"`{value}` is not a valid bytes32 type"
-            self._raise_exception('_parse_argument', error_msg)
+            self._raise_exception("_parse_argument", error_msg)
 
     @staticmethod
     def _raise_exception(func: str, error_msg: str):
+        """
+        Logs an error message and raises a ParserCallError with the message.
+        """
         err = f"{func}(): {error_msg}"
         logger.error(err)
         raise ParserCallError(err)

@@ -104,11 +104,11 @@ class DemonicTutor:
                 model = user_input if user_input else DEFAULT_CALL_FILE
             call_exporter = CallExporter(self.w3, model, context)
             data = call_exporter.extract_data()
-            if context == Context.MAIN.INPUT:
-                if data is not None:
-                    data_json = json.dumps(data, indent=4)
+            if data is not None:
+                data_json = json.dumps(data, indent=4)
+                if context == Context.MAIN.INPUT:
                     print(data_json)
-                    return data_json
+                return data_json
         except FileUtilsError:
             """handled in utils.file"""
         except (ABIFunctionNotFound, ParserCallError):
