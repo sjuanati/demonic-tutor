@@ -7,7 +7,7 @@ In the world of Magic: The Gathering, the Demonic Tutor card stands as a powerfu
 ![Demonic Tutor pic](https://github.com/sjuanati/demonic-tutor/blob/main/src/img/demonic-tutor.jpg)
 
 
-## Detailed Guides and Examples
+## Main Features
 
 Demonic Tutor streamlines and automates the process of data extraction from EVM-based blockchains, bringing efficiency and depth to blockchain data analysis. Here are its main features:
 
@@ -27,7 +27,7 @@ Demonic Tutor provides the capability to convert both Unix timestamps and standa
 
 The app has been tested across multiple EVM-compatible blockchains, including Ethereum, Polygon, Optimism, Binance Smart Chain, and Avalanche. This multi-chain functionality ensures that users can apply Demonic Tutor across various blockchain environments, maximizing its utility in diverse blockchain ecosystems.
 
-## Features
+## Detailed Guides and Examples
 
 The app comes equipped with a straightforward and intuitive menu that guides users through its various capabilities. From changing the network for data extraction to exporting logs and calling contract functions, the menu presents a seamless navigation experience:
 
