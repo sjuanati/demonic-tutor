@@ -78,7 +78,7 @@ To extract event data, select option `3` from the main menu and follow the promp
 }
 ```
 
-See further details on the [model template](https://github.com/sjuanati/demonic-tutor/blob/main/src/models/default_event.info.py)
+See further details on the [model template](https://github.com/sjuanati/demonic-tutor/blob/main/src/models/default_event.info.py) or [examples](https://github.com/sjuanati/demonic-tutor/tree/main/src/models/events/ethereum/defi).
 
 <details>
 <summary> Example: </summary>
@@ -156,7 +156,7 @@ For performing contract calls, choose option `4` from the main menu. Provide the
 }
 ```
 
-See further details on the [model template](https://github.com/sjuanati/demonic-tutor/blob/main/src/models/default_call.info.py)
+See further details on the [model template](https://github.com/sjuanati/demonic-tutor/blob/main/src/models/default_call.info.py) or [examples](https://github.com/sjuanati/demonic-tutor/tree/main/src/models/calls/ethereum/defi).
 
 <details>
 <summary>Example:</summary>
