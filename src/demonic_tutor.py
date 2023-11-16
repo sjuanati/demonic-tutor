@@ -18,7 +18,6 @@ from utils.exceptions import (
     FilterEventError,
 )
 
-
 load_dotenv()
 logger = setup_logger(__name__)
 
@@ -48,15 +47,18 @@ class DemonicTutor:
 
     def change_network(self):
         num_networks = len(NETWORKS) - 1
-        print(f"Available networks:")
+        print("Available networks:")
         for i, network in enumerate(NETWORKS.values()):
             print(f"   {i} -> {network}")
-        index_option = int(input(f"Choose between 0 and {num_networks}: "))
-        if isinstance(index_option, int) and 0 <= index_option <= num_networks:
-            network = list(NETWORKS.values())[index_option]
-            self.set_network(network)
-        else:
-            input("Wrong option selected -> network not changed")
+        try:
+            index_option = int(input(f"Choose between 0 and {num_networks}: "))
+            if 0 <= index_option <= num_networks:
+                network = list(NETWORKS.values())[index_option]
+                self.set_network(network)
+            else:
+                input("Wrong option selected -> network not changed\n")
+        except ValueError:
+            """back to main menu"""
 
     def get_block_number_by_timestamp(self):
         try:
