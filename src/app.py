@@ -46,7 +46,7 @@ if __name__ == "__main__":
     while True:
         clear_screen()
         main_menu()
-        choice = input("Please choose an option (0-3): ")
+        choice = input("Please choose an option (0-9): ")
         if choice == "0":
             dt.change_network()
         elif choice == "1":

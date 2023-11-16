@@ -1,12 +1,9 @@
 TODO:
+- readme
 - measure start & end time for each extraction
 - multicall to get multiple balances based on list of addresses
 - data streams (write file while reading events)
 - check that arg names from function signature = filters args!
-- tests for non-ethereumm networks
-- tests for contract calls
-- readme
-- models.sample to explain each field
 
 
 DONE:
@@ -16,3 +13,7 @@ DONE:
 - menu to 1) Extract data 2) block # given a timestamp, etc
 - support funcs: contract call at given block, date to block num
 - multichain (only evm-based blockchains)
+- models.sample to explain each field
+- tests for contract calls
+- genesis timestamp per network
+- tests for non-ethereumm networks events & calls
