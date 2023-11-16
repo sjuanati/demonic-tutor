@@ -15,46 +15,54 @@ from demonic_tutor import DemonicTutor
 
 class CallTester(unittest.TestCase):
     def setUp(self):
-        self.dt = DemonicTutor(NETWORKS["ETHEREUM"])
+        self.dt_eth = DemonicTutor(NETWORKS["ETHEREUM"])
+        self.dt_matic = DemonicTutor(NETWORKS["OPTIMISM"])
         self.loader = FileUtils()
 
-    def test_address_uint_args(self):
+    def test_eth_address_uint_args(self):
         """tbd"""
         actual = json.loads(
-            self.dt.export_call_data("01_addr_uint_args.json", Context.TEST_CALL.INPUT)
-        )
-        expected = self.loader.read_file(
-            "01_addr_uint_args.json", Context.TEST_CALL.OUTPUT
-        )
-        self.assertEqual(actual, expected)
-
-    def test_no_args_infinity_value(self):
-        """Variable (instead of function) returning an infinity value"""
-        actual = json.loads(
-            self.dt.export_call_data(
-                "02_no_args_infinity_result.json", Context.TEST_CALL.INPUT
+            self.dt_eth.export_call_data(
+                "01_eth_addr_uint_args.json", Context.TEST_CALL.INPUT
             )
         )
         expected = self.loader.read_file(
-            "02_no_args_infinity_result.json", Context.TEST_CALL.OUTPUT
+            "01_eth_addr_uint_args.json", Context.TEST_CALL.OUTPUT
         )
         self.assertEqual(actual, expected)
 
-    def test_bool_arg(self):
-        """Boolean argument"""
+    def test_eth_no_args_infinity_value(self):
+        """Variable (instead of function) returning an infinity value"""
         actual = json.loads(
-            self.dt.export_call_data("03_bool_arg.json", Context.TEST_CALL.INPUT)
+            self.dt_eth.export_call_data(
+                "02_eth_no_args_infinity_result.json", Context.TEST_CALL.INPUT
+            )
         )
-        expected = self.loader.read_file("03_bool_arg.json", Context.TEST_CALL.OUTPUT)
+        expected = self.loader.read_file(
+            "02_eth_no_args_infinity_result.json", Context.TEST_CALL.OUTPUT
+        )
         self.assertEqual(actual, expected)
 
-    def test_array_with_decimal_conversion(self):
+    def test_eth_bool_arg(self):
         """Boolean argument"""
         actual = json.loads(
-            self.dt.export_call_data("04_arrays_with_dec_conversion.json", Context.TEST_CALL.INPUT)
+            self.dt_eth.export_call_data("03_eth_bool_arg.json", Context.TEST_CALL.INPUT)
         )
-        expected = self.loader.read_file("04_arrays_with_dec_conversion.json", Context.TEST_CALL.OUTPUT)
+        expected = self.loader.read_file("03_eth_bool_arg.json", Context.TEST_CALL.OUTPUT)
         self.assertEqual(actual, expected)
+
+    def test_eth_array_with_decimal_conversion(self):
+        """Boolean argument"""
+        actual = json.loads(
+            self.dt_eth.export_call_data(
+                "04_eth_arrays_with_dec_conversion.json", Context.TEST_CALL.INPUT
+            )
+        )
+        expected = self.loader.read_file(
+            "04_eth_arrays_with_dec_conversion.json", Context.TEST_CALL.OUTPUT
+        )
+        self.assertEqual(actual, expected)
+
 
 if __name__ == "__main__":
     unittest.main()

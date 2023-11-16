@@ -7,7 +7,6 @@ import unittest
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-
 from constants import NETWORKS
 from utils.file import FileUtils
 from utils.context import Context
@@ -178,7 +177,7 @@ class EventTester(unittest.TestCase):
 
     def test_op_general(self):
         """
-        Filter by indexed bytes32 and uint8 
+        Filter by indexed bytes32 and uint8
         RegistrationRequested (index_topic_1 bytes32 hash ..., index_topic_3 uint8 source)
         """
         actual = json.loads(
@@ -190,6 +189,7 @@ class EventTester(unittest.TestCase):
             "11_op_int_bytes_filters.json", Context.TEST_EVENT.OUTPUT
         )
         self.assertEqual(actual, expected)
+
 
 if __name__ == "__main__":
     unittest.main()
