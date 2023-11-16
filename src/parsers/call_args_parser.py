@@ -1,3 +1,5 @@
+import re
+
 from utils.logger import setup_logger
 from utils.address import AddressUtils
 from utils.exceptions import ParserCallError
@@ -77,6 +79,7 @@ class CallArgsParser:
 
     def _parse_argument(self, arg: str, type: str):
         """tbc"""
+        # Bool type
         if type == "bool":
             if isinstance(arg, bool):
                 return arg
@@ -85,12 +88,19 @@ class CallArgsParser:
                 self._raise_exception("_parse_argument", error_msg)
         elif type.startswith("uint") or type.startswith("int"):
             return arg
+        # Address type
         elif type == "address":
             return self.addr_utils.addr_checksum(arg)
+        # Bytes or String types
+        elif type.startswith("bytes") or type == "string":
+            if not arg.startswith("0x"):
+                arg = "0x" + arg
+            self._is_valid_bytes32(arg)
+            return arg
+        # Type not found
         else:
             error_msg = f"No matching type: {type}"
             self._raise_exception("_parse_argument", error_msg)
-        # TODO: arrays, structs
 
     def _check_args(self, args, types):
         """tbd"""
@@ -116,8 +126,14 @@ class CallArgsParser:
             error_msg = f"Names for {f_output_names} != Names for {f_output_decimals}"
             self._raise_exception("_check_outputs", error_msg)
 
+    def _is_valid_bytes32(self, value):
+        pattern = re.compile(r"^0x[a-fA-F0-9]{64}$")
+        if not pattern.match(value):
+            error_msg = f"`{value}` is not a valid bytes32 type"
+            self._raise_exception('_parse_argument', error_msg)
+
     @staticmethod
     def _raise_exception(func: str, error_msg: str):
         err = f"{func}(): {error_msg}"
         logger.error(err)
-        raise ValueError(err)
+        raise ParserCallError(err)
