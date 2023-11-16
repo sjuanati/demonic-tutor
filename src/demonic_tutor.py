@@ -13,6 +13,7 @@ from web3.exceptions import ABIFunctionNotFound
 from constants import NETWORKS, DEFAULT_CALL_FILE, DEFAULT_EVENT_FILE
 from utils.exceptions import (
     FileUtilsError,
+    ParserCallError,
     BlockUtilsError,
     FilterEventError,
 )
@@ -103,12 +104,12 @@ class DemonicTutor:
                 model = user_input if user_input else DEFAULT_CALL_FILE
             call_exporter = CallExporter(self.w3, model, context)
             data = call_exporter.extract_data()
-            data_json = json.dumps(data, indent=4)
             if context == Context.MAIN.INPUT:
-                print(data_json)
-            return data_json
-
+                if data is not None:
+                    data_json = json.dumps(data, indent=4)
+                    print(data_json)
+                    return data_json
         except FileUtilsError:
             """handled in utils.file"""
-        except ABIFunctionNotFound:
-            """handled in callers.contract"""
+        except (ABIFunctionNotFound, ParserCallError):
+            """handled in callers.call"""

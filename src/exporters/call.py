@@ -49,7 +49,7 @@ class CallExporter:
             """handled in parsers.call_args_parser"""
         except Exception as e:
             logger.error(f"extract_data(): {e}")
-            raise e
+            raise ParserCallError(e)
 
     def _get_contract(self):
         return (

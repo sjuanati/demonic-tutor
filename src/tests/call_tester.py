@@ -16,7 +16,7 @@ from demonic_tutor import DemonicTutor
 class CallTester(unittest.TestCase):
     def setUp(self):
         self.dt_eth = DemonicTutor(NETWORKS["ETHEREUM"])
-        self.dt_matic = DemonicTutor(NETWORKS["OPTIMISM"])
+        self.dt_op = DemonicTutor(NETWORKS["OPTIMISM"])
         self.loader = FileUtils()
 
     def test_eth_address_uint_args(self):
@@ -52,7 +52,7 @@ class CallTester(unittest.TestCase):
         self.assertEqual(actual, expected)
 
     def test_eth_array_with_decimal_conversion(self):
-        """Boolean argument"""
+        """***************************"""
         actual = json.loads(
             self.dt_eth.export_call_data(
                 "04_eth_arrays_with_dec_conversion.json", Context.TEST_CALL.INPUT
@@ -63,6 +63,17 @@ class CallTester(unittest.TestCase):
         )
         self.assertEqual(actual, expected)
 
+    def test_op_bytes_arg_bool_result(self):
+        """Filter by indexed args bytes32 & address, returns boolean"""
+        actual = json.loads(
+            self.dt_op.export_call_data(
+                "05_op_bytes_arg_bool_return.json", Context.TEST_CALL.INPUT
+            )
+        )
+        expected = self.loader.read_file(
+            "05_op_bytes_arg_bool_return.json", Context.TEST_CALL.OUTPUT
+        )
+        self.assertEqual(actual, expected)
 
 if __name__ == "__main__":
     unittest.main()
